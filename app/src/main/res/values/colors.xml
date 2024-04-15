@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="menu_background_beige">#F0EADA</color>
+    <color name="menu_clicked_beige">#E3D8BA</color>
+    <color name="test_salmon">#FFA07A</color>
+    <color name="menu_order_green">#F3FFD9</color>
+    <color name="menu_ai_red">#FFC9B2</color>
+
+    <color name="bag_background_green">#EFF3E6</color>
+    <color name="bag_price_blue">#044FA8</color>
+    <color name="bag_order_brown">#E3D8BA</color>
+
+    <color name="popup_close_green">#C3C4A6</color>
+    <color name="popup_order_orange">#FF9820</color>
+    <color name="popup_background_grey">#A6333333</color>
+
+    <color name="order_background_green">#F5F7EC</color>
+    <color name="order_itembackground_brown">#EAE0C5</color>
 </resources>

@@ -1,4 +1,33 @@
 <resources>
     <string name="app_name">CapstonApp</string>
     <string name="start_title">Capston</string>
+    <string name="main_title">한식 다이어리</string>
+    <string name="main_subtitle">맛있는 비밀이 피어나는 곳</string>
+
+    <string name="menu_course">코스요리</string>
+    <string name="menu_handon">한돈</string>
+    <string name="menu_hanoo">한우</string>
+    <string name="menu_ilpoom">일품</string>
+    <string name="menu_drink">음료/주류</string>
+    <string name="menu_orderlist">주문내역</string>
+    <string name="menu_aimode">AI챗봇</string>
+
+    <string name="bag_title">장바구니</string>
+    <string name="bag_total_count">%d가지 %d개</string>
+    <string name="bag_total">합계</string>
+    <string name="bag_order">주문</string>
+    <string name="bag_delete">삭제</string>
+
+    <string name="bag_price">%d원</string>
+    <string name="bag_count">%d개</string>
+
+    <string name="popup_title">주문 하시겠습니까?</string>
+    <string name="popup_subtitle">주문 내역을 잘 확인해주세요!</string>
+    <string name="popup_close">닫기</string>
+    <string name="popup_order">주문하기</string>
+
+    <string name="order_title">주문내역</string>
+    <string name="order_total">합계</string>
+
+
 </resources>
