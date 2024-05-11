@@ -5,46 +5,77 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_title"
-        android:textSize="60sp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="40dp"
+    <ImageView
+        android:id="@+id/iv_top"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/ic_rectangle_benner_beige"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fcv_bag"
+        app:layout_constraintBottom_toTopOf="@id/fcv_main"/>
+
+    <ImageView
+        android:id="@+id/iv_bottom"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/ic_rectangle_benner_beige"
+        app:layout_constraintStart_toEndOf="@id/fcv_menu"
+        app:layout_constraintEnd_toStartOf="@id/fcv_bag"
+        app:layout_constraintTop_toBottomOf="@id/fcv_main"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="400dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/logo"
+        app:layout_constraintTop_toTopOf="@id/iv_top"
+        app:layout_constraintStart_toStartOf="@id/iv_top"
+        app:layout_constraintBottom_toBottomOf="@id/iv_top"/>
 
     <TextView
-        android:id="@+id/tv_subtitle"
+        android:id="@+id/tv_menu_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/main_subtitle"
-        android:textSize="20sp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintStart_toEndOf="@id/tv_title"
-        app:layout_constraintBottom_toBottomOf="@id/tv_title"/>
+        android:text="TextView"
+        android:textSize="50sp"
+        android:layout_marginStart="70dp"
+        app:layout_constraintStart_toEndOf="@id/iv_logo"
+        app:layout_constraintTop_toTopOf="@id/iv_top"
+        app:layout_constraintBottom_toBottomOf="@id/iv_top"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_ai_mode"
+        android:layout_width="200dp"
+        android:layout_height="90dp"
+        android:text="@string/main_aimode"
+        android:textSize="40sp"
+        android:background="@drawable/ic_rectangle_aibutton_gray"
+        android:layout_marginEnd="70dp"
+        app:layout_constraintEnd_toEndOf="@id/iv_top"
+        app:layout_constraintTop_toTopOf="@id/iv_top"
+        app:layout_constraintBottom_toBottomOf="@id/iv_top"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_menu"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
         android:background="@color/menu_background_beige"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+        app:layout_constraintTop_toBottomOf="@id/iv_top"
+        app:layout_constraintEnd_toStartOf="@id/fcv_main"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_main"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/iv_bottom"
         app:layout_constraintEnd_toStartOf="@id/fcv_bag"
         app:layout_constraintStart_toEndOf="@id/fcv_menu"
-        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+        app:layout_constraintTop_toBottomOf="@id/iv_top" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_bag"
@@ -52,11 +83,9 @@
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fcv_main"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

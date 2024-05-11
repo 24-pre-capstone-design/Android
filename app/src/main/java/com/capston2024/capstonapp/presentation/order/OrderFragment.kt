@@ -1,6 +1,7 @@
 package com.capston2024.capstonapp.presentation.order
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ class OrderFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setViewModelAndAdapter()
+        clickPayButton()
     }
 
     private fun setViewModelAndAdapter(){
@@ -40,6 +42,15 @@ class OrderFragment:Fragment() {
         orderAdapter= OrderAdapter(requireContext(), viewModel)
         binding.rvOrder.adapter=orderAdapter
         binding.tvTotalPrice.text=getString(R.string.bag_price, orderAdapter.getTotalPrice())
+    }
+
+    private fun clickPayButton(){
+        binding.btnPay.setOnClickListener {
+            Log.d("clicked", "btnPay clicked!!!!")
+            val dialog=PayCheckDialog()
+            dialog.isCancelable=false
+            activity?.let{dialog.show(it.supportFragmentManager, "ConfirmDialog")}
+        }
     }
 
     override fun onDestroyView() {

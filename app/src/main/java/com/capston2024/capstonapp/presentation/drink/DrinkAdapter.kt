@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.ItemFoodBinding
 import com.capston2024.capstonapp.extension.Diff
-import com.capston2024.capstonapp.presentation.course.CourseViewHolder
 
 class DrinkAdapter : ListAdapter<ResponseMockDto.MockModel, DrinkViewHolder>(
     userDiffCallback
