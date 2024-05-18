@@ -19,7 +19,7 @@ class OrderFragment:Fragment() {
         get()= requireNotNull(_binding){"null"}
 
     private lateinit var orderAdapter: OrderAdapter
-    private lateinit var viewModel:MainViewModel
+    private lateinit var mainViewModel:MainViewModel
 
 
     override fun onCreateView(
@@ -34,22 +34,26 @@ class OrderFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setViewModelAndAdapter()
-        clickPayButton()
+        clickButtons()
     }
 
     private fun setViewModelAndAdapter(){
-        viewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        orderAdapter= OrderAdapter(requireContext(), viewModel)
+        mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        orderAdapter= OrderAdapter(requireContext(), mainViewModel)
         binding.rvOrder.adapter=orderAdapter
         binding.tvTotalPrice.text=getString(R.string.bag_price, orderAdapter.getTotalPrice())
     }
 
-    private fun clickPayButton(){
+    private fun clickButtons(){
         binding.btnPay.setOnClickListener {
             Log.d("clicked", "btnPay clicked!!!!")
             val dialog=PayCheckDialog()
             dialog.isCancelable=false
             activity?.let{dialog.show(it.supportFragmentManager, "ConfirmDialog")}
+        }
+
+        binding.btnBack.setOnClickListener{
+            mainViewModel.isVisibleOrderList(false)
         }
     }
 

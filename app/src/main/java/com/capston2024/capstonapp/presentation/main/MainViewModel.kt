@@ -36,11 +36,20 @@ class MainViewModel @Inject constructor(
     private val _menuState = MutableStateFlow<MenuState>(MenuState.Loading) // 초기 상태로 Loading 설정
     val menuState: StateFlow<MenuState> = _menuState
 
+    //ai모드인지 basic모드인지
     private val _mode = MutableLiveData<FragmentType>()
     var mode:LiveData<FragmentType> = _mode
 
+    //menuid의 값 저장
     private val _menuID=MutableLiveData<Int>()
     var menuID:LiveData<Int> = _menuID
+
+    //주문내역을 보이게 할지 말지 결정
+    private val _order=MutableLiveData<Boolean>(false)
+    var order:LiveData<Boolean> = _order
+
+    //직전의 배너 상단의 이름 저장
+    var eveTitle:String=""
 
     init {
         _orderList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
@@ -88,5 +97,10 @@ class MainViewModel @Inject constructor(
 
     fun changeMenuID(menuID:Int){
         _menuID.value=menuID
+    }
+
+    fun isVisibleOrderList(visible:Boolean){
+        Log.d("mainviewmodel","orderlist:$visible")
+        _order.value=visible
     }
 }

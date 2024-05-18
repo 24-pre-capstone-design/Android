@@ -1,22 +1,25 @@
-package com.capston2024.capstonapp.presentation.main
+package com.capston2024.capstonapp.presentation.main.bag
 
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.util.Printer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.databinding.DialogOrdercheckBinding
-import com.capston2024.capstonapp.presentation.main.bag.BagAdapter
+import com.capston2024.capstonapp.presentation.main.MainActivity
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import com.capston2024.capstonapp.presentation.order.OrderFragment
 
 class OrderCheckDialog(
     //private val bagItems:List<ResponseMockDto.MockModel>
-    private val bagAdapter: BagAdapter
+    private val bagAdapter: BagAdapter,
+    private val mainViewModel: MainViewModel
 ): DialogFragment() {
     private var _binding: DialogOrdercheckBinding?=null
     private val binding
@@ -76,9 +79,11 @@ class OrderCheckDialog(
             Log.d("Fragment", "Fragment removed: $isFragmentRemoved")
         }
         //orderFragment 보이기
+        //fragment=fragmentManager.findFragmentById(R.id.fcv_order)
         fragmentManager.beginTransaction()
-            .replace(R.id.fcv_main, OrderFragment())
+            .replace(R.id.fcv_order,OrderFragment())
             .commit()
+        mainViewModel.isVisibleOrderList(true)
     }
 
     override fun onDestroyView() {

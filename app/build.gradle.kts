@@ -38,6 +38,15 @@ android {
             )
         }
     }
+    packaging.resources {
+        // Multiple dependency bring these files in. Exclude them to enable
+        // our test APK to build (has no effect on our AARs)
+        excludes += "/META-INF/AL2.0"
+        excludes += "/META-INF/LGPL2.1"
+        excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        excludes += "META-INF/INDEX.LIST"
+        excludes += "META-INF/DEPENDENCIES"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -92,6 +101,21 @@ dependencies {
 
     // timber
     implementation ("com.jakewharton.timber:timber:4.7.1")
+
+    implementation("io.ktor:ktor-client-okhttp:2.3.0")
+    implementation("com.aallam.openai:openai-client:3.7.2")
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    // To use generative AI
+    implementation(fileTree("libs") { include("*.jar") })
+    //implementation files("libs/gapic-google-cloud-ai-generativelanguage-v1beta2-java-0.0.0-SNAPSHOT.jar")
+
+    implementation("com.google.api:gax:2.25.0")
+    implementation("com.google.api:gax-grpc:2.25.0")
+    implementation("com.google.api:gax-httpjson:0.110.0")
+    implementation("io.grpc:grpc-okhttp:1.53.0")
+    // tokenizer
+    implementation("com.knuddels:jtokkit:0.6.1")
 }
 
 kapt {
