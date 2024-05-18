@@ -1,41 +1,24 @@
 package com.capston2024.capstonapp.presentation.startend
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.capston2024.capstonapp.data.FragmentType
 import com.capston2024.capstonapp.databinding.ActivityStartBinding
+import androidx.appcompat.app.AppCompatActivity
+import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.presentation.main.MainActivity
 
 class StartActivity : AppCompatActivity() {
     private lateinit var binding:ActivityStartBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initBinds()
-        clickButton()
-    }
+        setContentView(R.layout.activity_start)
 
-    private fun initBinds(){
         binding= ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    }
 
-    private fun clickButton(){
-        binding.btnAiMode.setOnClickListener {
-            var intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.putExtra("mode", FragmentType.AI_MODE.name) // ai mode일 때. string으로 변환하여 넘겨줌
+        binding.startScreen.setOnClickListener() {
+            var intent = Intent(applicationContext, MainActivity :: class.java)
             startActivity(intent)
-            finish()
-        }
-        binding.btnBasic.setOnClickListener {
-            var intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.putExtra("mode", FragmentType.BASIC_MODE.name) // basic 일 때
-            startActivity(intent)
-            finish()
         }
     }
-
 }

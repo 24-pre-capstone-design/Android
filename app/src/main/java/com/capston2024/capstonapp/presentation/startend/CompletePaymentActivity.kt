@@ -5,22 +5,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import com.capston2024.capstonapp.databinding.ActivityCompletePaymentBinding
+import com.capston2024.capstonapp.R
 
 class CompletePaymentActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityCompletePaymentBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initBinds()
+        setContentView(R.layout.activity_complete_payment)
         Handler(Looper.getMainLooper()).postDelayed({
             var intent = Intent(applicationContext, StartActivity::class.java)
             startActivity(intent)
         }, 5000)
-    }
-
-    private fun initBinds(){
-        binding= ActivityCompletePaymentBinding.inflate(layoutInflater)
-        setContentView(binding.root)
     }
 }

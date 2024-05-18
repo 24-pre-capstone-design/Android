@@ -2,6 +2,8 @@
     <string name="app_name">CapstonApp</string>
     <string name="start_title">Capston</string>
 
+    <string name="start_welcome">\n한식 다이어리에 \n오신 것을 환영합니다.\n</string>
+
     <string name="start_basic">기본모드</string>
     <string name="start_ai">AI모드</string>
 
@@ -44,6 +46,5 @@
 
     <string name="popup_pay_title">결제 하시겠습니까?</string>
     <string name="popup_pay">결제하기</string>
-
 
 </resources>
