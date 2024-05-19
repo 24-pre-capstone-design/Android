@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     }
 
     private fun initBinds() {
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
 
