@@ -1,7 +1,6 @@
 package com.capston2024.capstonapp.presentation.main
 
 import android.app.Dialog
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,11 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.capston2024.capstonapp.R
-import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.DialogOrdercheckBinding
+import com.capston2024.capstonapp.presentation.main.bag.BagAdapter
 import com.capston2024.capstonapp.presentation.order.OrderFragment
 
 class OrderCheckDialog(
