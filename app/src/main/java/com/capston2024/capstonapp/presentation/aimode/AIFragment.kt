@@ -17,14 +17,20 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.aallam.openai.api.chat.ChatRole
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Message
 import com.capston2024.capstonapp.data.MessageType
 import com.capston2024.capstonapp.databinding.FragmentAiBinding
+import com.capston2024.capstonapp.presentation.aimode.data.ChatAdapter
+import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class AIFragment : Fragment() {
@@ -32,6 +38,10 @@ class AIFragment : Fragment() {
     private val binding get() = _binding!!
     private val messages = mutableListOf<Message>()
     private val aiAdapter = AIAdapter(messages)
+
+    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var messageList:MutableList<CustomChatMessage>
+    private lateinit var openAIWrapper: OpenAIWrapper
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private var textToSpeech: TextToSpeech?=null
@@ -48,15 +58,51 @@ class AIFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setting()
 
-        //권한 설정
+        /*//권한 설정
         requestPermission()
         //tts 객체 초기화
         resetTTS()
 
         binding.rvAi.adapter= AIAdapter(messages)
         addChatItem(requireContext().getString(R.string.ai_explain), MessageType.AI_CHAT)
-        clickButton()
+        clickButton()*/
+    }
+
+    private fun setting(){
+        messageList= mutableListOf()
+        chatAdapter=ChatAdapter(messageList)
+        openAIWrapper=OpenAIWrapper(requireContext())
+
+        with(binding){
+            rvAi.layoutManager=LinearLayoutManager(requireContext())
+            rvAi.adapter=chatAdapter
+            btnInput.setOnClickListener{
+                clickButton()
+            }
+        }
+    }
+
+    private fun clickButton(){
+        handleUserMessage(binding.etMessage.text.toString())
+        binding.etMessage.setText("") //초기화
+    }
+
+    private fun handleUserMessage(message: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = openAIWrapper.chat(message)
+            withContext(Dispatchers.Main) {
+                updateChatWithResponse(message, response)
+            }
+        }
+    }
+
+    private fun updateChatWithResponse(userMessage: String, response: String) {
+        messageList.add(CustomChatMessage(ChatRole.User, userContent = userMessage))
+        messageList.add(CustomChatMessage(ChatRole.Assistant, userContent = response))
+        chatAdapter.notifyDataSetChanged()
+        binding.rvAi.scrollToPosition(messageList.size - 1)
     }
 
     private fun requestPermission() {
@@ -71,7 +117,7 @@ class AIFragment : Fragment() {
         }
     }
 
-    private fun resetTTS(){
+    /*private fun resetTTS(){
         // TTS 객체 초기화
         textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -183,19 +229,19 @@ class AIFragment : Fragment() {
 
         // 향후 이벤트를 추가하기 위해 예약
         override fun onEvent(eventType: Int, params: Bundle) {}
-    }
+    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
 
         //sst destroy
-        if (this::speechRecognizer.isInitialized) {
+        /*if (this::speechRecognizer.isInitialized) {
             speechRecognizer.destroy()
         }
 
         // TTS 객체 정리
         textToSpeech?.stop()
-        textToSpeech?.shutdown()
+        textToSpeech?.shutdown()*/
     }
 }

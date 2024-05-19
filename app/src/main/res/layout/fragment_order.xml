@@ -57,6 +57,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_pay"/>
 
+    <ImageView
+        android:id="@+id/iv_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/ic_rectangle_benner_beige"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_back"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:text="@string/order_back"
+        android:textSize="40sp"
+        android:background="@color/order_back_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_pay"
+        />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_pay"
         android:layout_width="400dp"

@@ -39,6 +39,7 @@
 
     <string name="order_title">주문내역</string>
     <string name="order_total">합계</string>
+    <string name="order_back">닫기</string>
     <string name="order_pay">결제하기</string>
 
     <string name="popup_pay_title">결제 하시겠습니까?</string>

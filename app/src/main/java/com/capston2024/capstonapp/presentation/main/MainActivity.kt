@@ -18,6 +18,7 @@ import com.capston2024.capstonapp.presentation.aimode.AIFragment
 import com.capston2024.capstonapp.presentation.main.bag.BagFragment
 import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 import com.capston2024.capstonapp.presentation.main.menu.MenuFragment
+import com.capston2024.capstonapp.presentation.order.OrderFragment
 import com.capston2024.capstonapp.presentation.order.PaymentListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -67,33 +68,37 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
 
     private fun setFragments() {
         mainViewModel.getMenu()
-        showFragments(R.id.fcv_menu, MenuFragment(), "menuFragment",FragmentType.AI_MODE)
+        showFragments(R.id.fcv_menu, MenuFragment(), "menuFragment", FragmentType.AI_MODE)
 
         var modeName = intent.getStringExtra("mode") // mode를 가져옴
         val mode = if (modeName != null) FragmentType.valueOf(modeName) else FragmentType.AI_MODE
 
         if (mode.equals(FragmentType.AI_MODE)) {
             // ai mode 처리
-            showFragments(R.id.fcv_main, AIFragment(), "aiFragment",FragmentType.AI_MODE)
+            showFragments(R.id.fcv_main, AIFragment(), "aiFragment", FragmentType.AI_MODE)
             mainViewModel.changeMode(FragmentType.AI_MODE)
         } else if (mode.equals(FragmentType.BASIC_MODE)) {
             // basic mode 처리
-            getMainFragment()
+            getFoodFragment()
             mainViewModel.changeMode(FragmentType.BASIC_MODE)
         }
 
-        binding.btnAiMode.setOnClickListener{
-            if(binding.btnAiMode.text.equals(getString(R.string.start_ai))){
-                replaceFragment(AIFragment(),FragmentType.AI_MODE)
-            }
-            else{
-                val firstFoodsIDValue=mainViewModel.firstMenu.value?.id?:0
-                replaceFragment(FoodsFragment(firstFoodsIDValue),FragmentType.BASIC_MODE)
+        binding.btnAiMode.setOnClickListener {
+            if (binding.btnAiMode.text.equals(getString(R.string.start_ai))) {
+                replaceFragment(AIFragment(), FragmentType.AI_MODE)
+            } else {
+                val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
+                replaceFragment(FoodsFragment(firstFoodsIDValue), FragmentType.BASIC_MODE)
             }
         }
+
+        binding.btnOrderList.setOnClickListener {
+            mainViewModel.isVisibleOrderList(true)
+        }
+        showFragments(R.id.fcv_order, OrderFragment(), "orderFragment", FragmentType.AI_MODE)
     }
 
-    fun showFragments(fcv: Int, fragment: Fragment, name: String, type:FragmentType) {
+    fun showFragments(fcv: Int, fragment: Fragment, name: String, type: FragmentType) {
         val currentFragment = supportFragmentManager.findFragmentById(fcv)
         if (currentFragment == null) {
             supportFragmentManager.beginTransaction()
@@ -101,30 +106,36 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 .commit()
         }
 
-        if(fcv==R.id.fcv_main){
+        if (fcv == R.id.fcv_main) {
             //type == 0 -> ai모드니까 기본모드버튼, type != 0 -> 기본모드니까 ai모드버튼
-            if(type == FragmentType.AI_MODE) {
+            if (type == FragmentType.AI_MODE) {
                 binding.btnAiMode.text = getString(R.string.start_basic)
                 mainViewModel.changeMode(FragmentType.AI_MODE)
-            }
-            else{
-                binding.btnAiMode.text=getString(R.string.start_ai)
+            } else {
+                binding.btnAiMode.text = getString(R.string.start_ai)
                 mainViewModel.changeMode(FragmentType.BASIC_MODE)
             }
         }
     }
 
-    private fun getMainFragment(){
+    //foodfragment의 내용 가져오기
+    private fun getFoodFragment() {
         lifecycleScope.launch {
-            mainViewModel.menuState.collect{menuState ->
-                when(menuState){
+            mainViewModel.menuState.collect { menuState ->
+                when (menuState) {
                     is MenuState.Success -> {
-                        showFragments(R.id.fcv_main,
-                            FoodsFragment(menuState.menuList[0].id),"mainFragment",FragmentType.BASIC_MODE)
+                        showFragments(
+                            R.id.fcv_main,
+                            FoodsFragment(menuState.menuList[0].id),
+                            "mainFragment",
+                            FragmentType.BASIC_MODE
+                        )
                         replaceMenuName(menuState.menuList[0].name)
                     }
+
                     is MenuState.Error -> {
                     }
+
                     is MenuState.Loading -> {
                     }
                 }
@@ -132,21 +143,45 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         }
     }
 
-    private fun detachChange(){
+    private fun detachChange() {
         mainViewModel.mode.observe(this) { mode ->
             when (mode) {
                 FragmentType.AI_MODE -> {
                     binding.btnAiMode.text = getString(R.string.start_basic)
-                    binding.tvMenuName.text=getString(R.string.main_aimode)
+                    binding.tvMenuName.text = getString(R.string.main_aimode)
                 }
 
                 else -> {
                     binding.btnAiMode.text = getString(R.string.start_ai)
-                    binding.tvMenuName.text=mainViewModel.firstMenu.value?.name
+                    binding.tvMenuName.text = mainViewModel.firstMenu.value?.name
+                }
+            }
+        }
+        mainViewModel.order.observe(this) { visible ->
+            when (visible) {
+                true -> {
+                    with(binding){
+                        fcvOrder.visibility = View.VISIBLE
+                        tvMenuName.text = getString(R.string.order_title)
+                        btnOrderList.visibility = View.INVISIBLE
+                        btnAiMode.visibility=View.INVISIBLE
+                    }
+                    mainViewModel.eveTitle = binding.tvMenuName.text.toString()
+                }
+
+                else -> {
+                    with(binding) {
+                        fcvOrder.visibility = View.INVISIBLE
+                        tvMenuName.text = mainViewModel.eveTitle
+                        btnOrderList.visibility=View.VISIBLE
+                        btnAiMode.visibility=View.VISIBLE
+                    }
+
                 }
             }
         }
     }
+
     override fun CompletePayment() {
         var intent = Intent(this, PayingActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -165,7 +200,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     }
 
     override fun replaceMenuName(menuName: String) {
-            binding.tvMenuName.text = menuName
+        binding.tvMenuName.text = menuName
     }
 
     override fun changeMenuID(menuID: Int) {

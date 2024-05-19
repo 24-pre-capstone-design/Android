@@ -9,18 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 import com.capston2024.capstonapp.databinding.FragmentBagBinding
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
-import com.capston2024.capstonapp.presentation.main.OrderCheckDialog
 
 class BagFragment : Fragment() {
     private var _binding: FragmentBagBinding? = null
     private val binding:FragmentBagBinding
         get() = requireNotNull(_binding){ "바인딩 객체 생성 안됨" }
     private lateinit var bagAdapter: BagAdapter
-    private lateinit var viewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,14 +37,15 @@ class BagFragment : Fragment() {
     }
 
     private fun setViewModelAndAdapter(){
-        viewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        bagAdapter= BagAdapter(requireContext(), viewModel)
+        mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        bagAdapter= BagAdapter(requireContext(), mainViewModel)
         binding.rvBag.adapter=bagAdapter
         val activity=requireActivity() as MainActivity
         activity.bagIsShow=true
     }
 
     fun setBag(){
+
         val foodItem = arguments?.getSerializable("selectedFood") as Bag
         Log.d("fooditem", "Item name: ${foodItem.name}")
         bagAdapter.addBagList(foodItem)
@@ -65,7 +64,7 @@ class BagFragment : Fragment() {
     private fun clickButtons(){
         binding.btnOrder.setOnClickListener {
             Log.d("clicked", "bagfragment - btnOrder clicked!!!!")
-            val dialog= OrderCheckDialog(bagAdapter)
+            val dialog= OrderCheckDialog(bagAdapter, mainViewModel)
             dialog.isCancelable=false
             activity?.let { dialog.show(it.supportFragmentManager, "ConfirmDialog") }
         }

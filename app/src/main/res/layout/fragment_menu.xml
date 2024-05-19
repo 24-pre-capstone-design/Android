@@ -21,22 +21,11 @@
         android:layout_width="match_parent"
         android:layout_height="750dp"
         android:orientation="vertical"
-        android:layout_marginBottom="30dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_order_list"
         tools:listitem="@layout/item_menu"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_order_list"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:text="@string/menu_orderlist"
-        android:textSize="25sp"
-        android:background="@drawable/ic_rectangle_order_list_gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+
 
     <!--<androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_ai_mode"

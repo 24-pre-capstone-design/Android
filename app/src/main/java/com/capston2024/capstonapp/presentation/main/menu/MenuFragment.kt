@@ -97,20 +97,6 @@ class MenuFragment : Fragment() {
                 }
             }
         }
-
-        clickButtons()
-    }
-
-    private fun clickButtons() {
-        binding.btnOrderList.setOnClickListener {
-            val fragmentManager = requireActivity().supportFragmentManager
-            val fragment = fragmentManager.findFragmentById(R.id.fcv_main)
-            fragment?.let {
-                fragmentManager.beginTransaction()
-                    .replace(R.id.fcv_main, OrderFragment())
-                    .commit()
-            }
-        }
     }
 
     override fun onDetach() {
