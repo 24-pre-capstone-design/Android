@@ -114,13 +114,6 @@ class OpenAIWrapper(val context: Context?) {
             var functionResponse = ""
             var handled = true
             when (function.name) {
-                CartManager.name()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
-                    val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
-                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
-                    Log.i("LLM-WK", "Argument $item $quantity")
-                    functionResponse = CartManager.function(item, quantity)
-                }
                 FoodMenuFunctions.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)

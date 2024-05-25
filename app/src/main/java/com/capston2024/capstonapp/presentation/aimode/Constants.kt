@@ -1,11 +1,11 @@
 package com.capston2024.capstonapp.presentation.aimode
 
+import com.capston2024.capstonapp.BuildConfig
 import com.knuddels.jtokkit.api.EncodingType
 import com.knuddels.jtokkit.api.ModelType
 
 internal object Constants {
-    internal const val OPENAI_TOKEN = "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"
-
+    internal const val OPENAI_TOKEN = BuildConfig.OPENAI_KEY
     /** Chat model: "gpt-4-32k" or "gpt-3.5-turbo-16k" "gpt-4o-2024-05-13"*/
     internal const val OPENAI_CHAT_MODEL = "gpt-4o-2024-05-13"
 

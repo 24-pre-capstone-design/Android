@@ -38,14 +38,13 @@ class BagFragment : Fragment() {
 
     private fun setViewModelAndAdapter(){
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        bagAdapter= BagAdapter(requireContext(), mainViewModel)
+        bagAdapter= BagAdapter(requireContext())
         binding.rvBag.adapter=bagAdapter
         val activity=requireActivity() as MainActivity
         activity.bagIsShow=true
     }
 
     fun setBag(){
-
         val foodItem = arguments?.getSerializable("selectedFood") as Bag
         Log.d("fooditem", "Item name: ${foodItem.name}")
         bagAdapter.addBagList(foodItem)
@@ -63,7 +62,7 @@ class BagFragment : Fragment() {
 
     private fun clickButtons(){
         binding.btnOrder.setOnClickListener {
-            Log.d("clicked", "bagfragment - btnOrder clicked!!!!")
+            //Log.d("bagfragment", "bagfragment - btnOrder clicked!!!!")
             val dialog= OrderCheckDialog(bagAdapter, mainViewModel)
             dialog.isCancelable=false
             activity?.let { dialog.show(it.supportFragmentManager, "ConfirmDialog") }

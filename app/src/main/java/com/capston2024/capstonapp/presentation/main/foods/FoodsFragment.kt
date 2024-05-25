@@ -16,6 +16,7 @@ import com.capston2024.capstonapp.data.FragmentType
 import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 import com.capston2024.capstonapp.databinding.FragmentFoodsBinding
 import com.capston2024.capstonapp.extension.FoodState
+import com.capston2024.capstonapp.presentation.aimode.AIViewModel
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ import java.io.Serializable
 
 @AndroidEntryPoint
 class FoodsFragment(private val id:Int) : Fragment() {
+    private val aiViewModel: AIViewModel by viewModels()
     private var _binding: FragmentFoodsBinding? = null
     private val binding: FragmentFoodsBinding
         get() = requireNotNull(_binding) { "null" }
@@ -129,7 +131,14 @@ class FoodsFragment(private val id:Int) : Fragment() {
         _binding = null
     }
 
-    companion object{// functioncall용 전처리
+    /***
+     * functioncall용 전처리
+     * gpt 함수호출을 위한 파트 입니다.
+     * ***/
+
+    companion object {
+        private var instance :FoodsFragment?=null
+
         fun name(): String{
             return "FoodOrderFunction"
         }
@@ -157,11 +166,22 @@ class FoodsFragment(private val id:Int) : Fragment() {
             return params
         }
         suspend fun foodOrderFunction(item: String, quantity: String):String{
+            val aiViewModel= instance?.aiViewModel
+            // 실제 함수 호출을 담당하는 메소드 입니다.
+            Log.d("courseclick", "coursefragment course clicked item: ${item}")
+            val foodItem: ResponseFoodDto.Food = aiViewModel?.printPriceOfFood(item) ?:
 
 
-            return ""
+            return "${item}을/를 ${quantity}만큼 장바구니에 넣었습니다!"
+            //여기 부분은 어느 정도 자율
         }
     }
+
+
+    /***
+     * functioncall용 전처리
+     * gpt 함수호출을 위한 파트 끝부분입니다.
+     * ***/
 
 
 }
