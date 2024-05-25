@@ -27,6 +27,12 @@ android {
             "BASE_URL",
             gradleLocalProperties(rootDir, providers).getProperty("base.url")
         )
+
+        buildConfigField(
+            "String",
+            "OPENAI_KEY",
+            gradleLocalProperties(rootDir, providers).getProperty("openai.key")
+        )
     }
 
     buildTypes {

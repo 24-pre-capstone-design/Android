@@ -1,19 +1,17 @@
 package com.capston2024.capstonapp.presentation.aimode
 
+import com.capston2024.capstonapp.BuildConfig
 import com.knuddels.jtokkit.api.EncodingType
 import com.knuddels.jtokkit.api.ModelType
 
 internal object Constants {
-    internal const val OPENAI_TOKEN = "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"
+    internal const val OPENAI_TOKEN = BuildConfig.OPENAI_KEY
 
     /** Chat model: "gpt-4-32k" or "gpt-3.5-turbo-16k" */
     internal const val OPENAI_CHAT_MODEL = "gpt-4-1106-preview"
 
     /** Image model: "dall-e-3" or "dall-e-2" */
     internal const val OPENAI_IMAGE_MODEL = "dall-e-3"
-
-    /** Image model: create on playground.openai.com */
-    internal const val OPENAI_ASSISTANT_ID = "asst_bykuslT6y2DWikNORnzl3ZTE"
 
     /** Tokenizer model: GPT_4_32K or GPT_3_5_TURBO_16K */
     internal val OPENAI_CHAT_TOKENIZER_MODEL = ModelType.GPT_4_32K // to match above
