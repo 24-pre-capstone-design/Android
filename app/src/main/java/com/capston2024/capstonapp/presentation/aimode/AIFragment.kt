@@ -17,6 +17,8 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aallam.openai.api.chat.ChatRole
@@ -24,8 +26,10 @@ import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Message
 import com.capston2024.capstonapp.data.MessageType
 import com.capston2024.capstonapp.databinding.FragmentAiBinding
+import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.presentation.aimode.data.ChatAdapter
 import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,11 +37,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
+@AndroidEntryPoint
 class AIFragment : Fragment() {
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
     private val messages = mutableListOf<Message>()
     private val aiAdapter = AIAdapter(messages)
+    private val aiViewModel:AIViewModel by viewModels()
 
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var messageList:MutableList<CustomChatMessage>
@@ -82,7 +88,33 @@ class AIFragment : Fragment() {
                 clickButton()
             }
         }
+
+        aiViewModel.getData()
+        lifecycleScope.launch {
+           aiViewModel.allFoodState.collect{foodState ->
+               when(foodState){
+                   is FoodState.Success -> {
+                       //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
+                       aiViewModel.updateFoodsList(foodState.foodList)
+                       println("음식 이름을 입력하세요:")
+                       val foodName = readLine() ?: ""
+                       aiViewModel.printPriceOfFood(foodName)
+                   }
+
+                   is FoodState.Error -> {
+                       //Toast.makeText(activity, "정보 가져오기 실패", Toast.LENGTH_SHORT).show()
+                       Log.e("error","foodstate is error: ${foodState.message}")
+                   }
+
+                   is FoodState.Loading -> {
+                       //Toast.makeText(activity, "로딩중", Toast.LENGTH_SHORT).show()
+                   }
+               }
+           }
+        }
     }
+
+
 
     private fun clickButton(){
         handleUserMessage(binding.etMessage.text.toString())
