@@ -8,10 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.FragmentOrderBinding
+import com.capston2024.capstonapp.extension.OrderHistoryState
+import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class OrderFragment:Fragment() {
     private var _binding:FragmentOrderBinding?=null
@@ -20,6 +25,7 @@ class OrderFragment:Fragment() {
 
     private lateinit var orderAdapter: OrderAdapter
     private lateinit var mainViewModel:MainViewModel
+    private lateinit var orderViewModel: OrderViewModel
 
 
     override fun onCreateView(
@@ -39,9 +45,30 @@ class OrderFragment:Fragment() {
 
     private fun setViewModelAndAdapter(){
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        orderAdapter= OrderAdapter(requireContext(), mainViewModel)
+        orderAdapter= OrderAdapter(requireContext())
+        orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
+        orderViewModel.getOrderHistory(mainViewModel.getPaymentId())
+
         binding.rvOrder.adapter=orderAdapter
-        binding.tvTotalPrice.text=getString(R.string.bag_price, orderAdapter.getTotalPrice())
+        lifecycleScope.launch {
+            orderViewModel.orderHistoryState.collect{orderHistoryState ->
+                when(orderHistoryState){
+                    is OrderHistoryState.Success -> {
+                        orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
+                    }
+                    is OrderHistoryState.Error -> {
+                        Log.e("orderfragment","foodstate is error")
+                    }
+                    is OrderHistoryState.Loading -> {
+
+                    }
+                }
+            }
+        }
+
+        orderViewModel.orderTotalPrice.observe(viewLifecycleOwner) { totalPrice ->
+            binding.tvTotalPrice.text = getString(R.string.bag_price, totalPrice?:0)
+        }
     }
 
     private fun clickButtons(){

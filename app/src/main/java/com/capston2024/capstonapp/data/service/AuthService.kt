@@ -34,17 +34,17 @@ interface AuthService {
 
     //paymentId
     @POST("/payment")
-    suspend fun getPaymentId():ResponsePaymentIdDto
+    suspend fun getPaymentId(): ResponsePaymentIdDto
 
     @POST("/orderHistory")
     suspend fun makeOrderHistory(
         @Body requestOrderListDto: RequestOrderDto
-    ):ResponseOrderDto
+    ): ResponseOrderDto
 
     @GET("/orderHistory/payment/{paymentId}")
     suspend fun getOrderHistory(
         @Path("paymentId") paymentId:Int
-    ):ResponseOrderHistoryDto
+    ): ResponseOrderHistoryDto
 
     @GET("/food")
     suspend fun getAllFoods():ResponseFoodDto

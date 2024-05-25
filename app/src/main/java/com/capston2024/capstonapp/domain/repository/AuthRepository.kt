@@ -23,13 +23,8 @@ interface AuthRepository {
     suspend fun getPicture(pictureURL:String):Result<ResponsePictureDto>
 
     suspend fun getPaymentId():Result<ResponsePaymentIdDto>
-    suspend fun makeOrder(
-        order:RequestOrderDto
-    ):Result<ResponseOrderDto>
 
-    suspend fun getOrderHistory(
-        paymentId:Int
-    ):Result<ResponseOrderHistoryDto>
-
+    suspend fun makeOrder(order:RequestOrderDto):Result<ResponseOrderDto>
+    suspend fun getOrderHistory(paymentId:Int):Result<ResponseOrderHistoryDto>
     suspend fun getAllFoods():Result<ResponseFoodDto>
 }

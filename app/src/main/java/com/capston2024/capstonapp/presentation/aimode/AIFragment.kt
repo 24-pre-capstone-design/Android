@@ -91,26 +91,26 @@ class AIFragment : Fragment() {
 
         aiViewModel.getData()
         lifecycleScope.launch {
-            aiViewModel.allFoodState.collect{foodState ->
-                when(foodState){
-                    is FoodState.Success -> {
-                        //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
-                        aiViewModel.updateFoodsList(foodState.foodList)
-                        println("음식 이름을 입력하세요:")
-                        val foodName = readLine() ?: ""
-                        aiViewModel.printPriceOfFood(foodName)
-                    }
+           aiViewModel.allFoodState.collect{foodState ->
+               when(foodState){
+                   is FoodState.Success -> {
+                       //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
+                       aiViewModel.updateFoodsList(foodState.foodList)
+                       println("음식 이름을 입력하세요:")
+                       val foodName = readLine() ?: ""
+                       aiViewModel.printPriceOfFood(foodName)
+                   }
 
-                    is FoodState.Error -> {
-                        //Toast.makeText(activity, "정보 가져오기 실패", Toast.LENGTH_SHORT).show()
-                        Log.e("error","foodstate is error: ${foodState.message}")
-                    }
+                   is FoodState.Error -> {
+                       //Toast.makeText(activity, "정보 가져오기 실패", Toast.LENGTH_SHORT).show()
+                       Log.e("error","foodstate is error: ${foodState.message}")
+                   }
 
-                    is FoodState.Loading -> {
-                        //Toast.makeText(activity, "로딩중", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+                   is FoodState.Loading -> {
+                       //Toast.makeText(activity, "로딩중", Toast.LENGTH_SHORT).show()
+                   }
+               }
+           }
         }
     }
 
@@ -140,7 +140,7 @@ class AIFragment : Fragment() {
     private fun requestPermission() {
         // 버전 체크, 권한 허용했는지 체크
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED
+        != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
