@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.aallam.openai.api.core.Parameters
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.data.FragmentType
@@ -18,6 +19,10 @@ import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import java.io.Serializable
 
 @AndroidEntryPoint
@@ -123,4 +128,40 @@ class FoodsFragment(private val id:Int) : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    companion object{// functioncall용 전처리
+        fun name(): String{
+            return "FoodOrderFunction"
+        }
+        fun description(): String {
+            return "사용자의 주문을 받아 장바구니에 추가하는 함수입니다. "
+        }
+        fun params(): Parameters {
+            val params = Parameters.buildJsonObject {
+                put("type", "object")
+                putJsonObject("properties") {
+                    putJsonObject("item") {
+                        put("type", "string")
+                        put("description", "현재 주문할 음식의 이름 입니다.")
+                    }
+                    putJsonObject("quantity"){
+                        put("type","string")
+                        put("description","추가할 아이템의 양 입니다.")
+                    }
+                }
+                putJsonArray("required") {
+                    add("item")
+                    add("quantity")
+                }
+            }
+            return params
+        }
+        suspend fun foodOrderFunction(item: String, quantity: String):String{
+
+
+            return ""
+        }
+    }
+
+
 }

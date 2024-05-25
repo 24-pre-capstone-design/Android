@@ -18,6 +18,7 @@ import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
 import com.capston2024.capstonapp.presentation.aimode.data.EmbeddingHistory
 import com.capston2024.capstonapp.presentation.aimode.data.HistoryDbHelper
 import com.capston2024.capstonapp.presentation.aimode.data.SlidingWindow
+import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -66,11 +67,6 @@ class OpenAIWrapper(val context: Context?) {
             // hardcoding weather function every time (for now)
             functions {
                 function {
-                    name = "currentWeather"
-                    description = "Get the current weather in a given location"
-                    parameters = OpenAIFunctions.currentWeatherParams()
-                }
-                function {
                     name = CartManager.name()
                     description =CartManager.description()
                     parameters = CartManager.params()
@@ -84,6 +80,11 @@ class OpenAIWrapper(val context: Context?) {
                     name = AskWikipediaFunction.name()
                     description = AskWikipediaFunction.description()
                     parameters = AskWikipediaFunction.params()
+                }
+                function {
+                    name = FoodsFragment.name()
+                    description = FoodsFragment.description()
+                    parameters = FoodsFragment.params()
                 }
 
 
@@ -135,6 +136,13 @@ class OpenAIWrapper(val context: Context?) {
                     Log.i("LLM-WK", "Argument $query ")
 
                     functionResponse = AskWikipediaFunction.function(query)
+                }
+                FoodsFragment.name()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
+                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    Log.i("LLM-WK", "Argument $item $quantity")
+                    functionResponse = FoodsFragment.foodOrderFunction(item, quantity)
                 }
 
                 else -> {

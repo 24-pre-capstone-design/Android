@@ -1,10 +1,14 @@
 package com.capston2024.capstonapp.presentation.aimode
 
+import android.os.Bundle
 import com.aallam.openai.api.core.Parameters
+import com.capston2024.capstonapp.data.Bag
+import com.capston2024.capstonapp.presentation.main.MainActivity
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import java.io.Serializable
 import kotlin.collections.mutableMapOf
 
 class CartManager {
