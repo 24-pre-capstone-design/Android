@@ -96,7 +96,7 @@ class FoodsFragment(private val id:Int) : Fragment() {
                 Log.d("courseclick", "coursefragment course clicked item: ${foodItem.name}")
                 val activity = requireActivity() as MainActivity
                 val bagFragment=activity.bagFragment
-                val bag = Bag(foodItem.name, foodItem.price, 1) // Bag 객체 생성
+                val bag = Bag(foodItem.id, foodItem.name, foodItem.price, 1) // Bag 객체 생성
                 val bundle = Bundle().apply {
                     putSerializable("selectedFood", bag as Serializable) // Bag 객체를 직렬화하여 Bundle에 추가
                 }
