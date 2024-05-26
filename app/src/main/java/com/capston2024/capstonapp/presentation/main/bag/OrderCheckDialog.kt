@@ -145,8 +145,7 @@ class OrderCheckDialog(
         val fragmentManager = requireActivity().supportFragmentManager
         var fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
         fragment?.let {
-            val activity = requireActivity() as MainActivity
-            activity.bagIsShow = false
+            mainViewModel.setBagShow(false)
 
             val transaction = fragmentManager.beginTransaction()
             transaction.remove(it)
