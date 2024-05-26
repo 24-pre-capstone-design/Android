@@ -1,6 +1,6 @@
 package com.capston2024.capstonapp.presentation.aimode
 
-import com.capston2024.capstonapp.BuildConfiggi
+import com.capston2024.capstonapp.BuildConfig
 import com.knuddels.jtokkit.api.ModelType
 
 internal object Constants {
