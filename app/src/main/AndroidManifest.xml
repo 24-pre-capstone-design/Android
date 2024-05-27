@@ -16,7 +16,7 @@
         android:theme="@style/Theme.CapstonApp"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.PayingActivity"
+            android:name=".presentation.StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.main.MainActivity" />
-        <activity android:name=".presentation.StartActivity" />
+        <activity android:name=".presentation.PayingActivity" />
         <activity android:name=".presentation.CompletePaymentActivity" />
     </application>
 
