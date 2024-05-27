@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <TextView
-        android:id="@+id/payingMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="결제 중"
-        android:textSize="60dp"/>
+    <Button
+        android:id="@+id/payingBtn"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="결제">
+    </Button>
 
 </LinearLayout>

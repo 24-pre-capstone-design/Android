@@ -21,4 +21,10 @@
     <color name="order_itembackground_brown">#EAE0C5</color>
 
     <color name="announce_text_brown">#342D34</color>
+
+    <color name="progressbar_background">#44436f</color>
+    <color name="progressbar_progress">#708cb0</color>
+    <color name="logo_nice">#708cb0</color>
+    <color name="logo_diary">#cbb789</color>
+
 </resources>
