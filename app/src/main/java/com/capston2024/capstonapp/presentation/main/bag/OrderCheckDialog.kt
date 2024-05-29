@@ -92,7 +92,7 @@ class OrderCheckDialog(
         mainViewModel.setOrderCheckDialogCallback(this)
         mainViewModel.setPaymentId()
 
-        //handleOrderDetails(35)
+        handleOrderDetails(mainViewModel.getPaymentId()!!)
 
 
         //mainViewModel.processOrder()
@@ -100,6 +100,8 @@ class OrderCheckDialog(
             handleOrderDetails(mainViewModel.getPaymentId())
             return
         }*/
+
+
         /*mainViewModel.setPaymentId()
         lifecycleScope.launch {
             mainViewModel.paymentIdState.collect { state ->
