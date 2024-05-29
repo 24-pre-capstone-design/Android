@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capston2024.capstonapp.R
@@ -16,6 +18,7 @@ import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 import com.capston2024.capstonapp.databinding.FragmentFoodsBinding
 import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.presentation.main.MainActivity
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -26,7 +29,8 @@ class FoodsFragment(private val id:Int) : Fragment() {
     private val binding: FragmentFoodsBinding
         get() = requireNotNull(_binding) { "null" }
 
-    private val courseViewModel: FoodsViewModel by viewModels()
+    private lateinit var mainViewModel: MainViewModel
+    private val foodsViewModel: FoodsViewModel by viewModels()
     private lateinit var foodsAdapter: FoodsAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +38,7 @@ class FoodsFragment(private val id:Int) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFoodsBinding.inflate(inflater, container, false)
+        mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         return binding.root
     }
 
@@ -43,12 +48,13 @@ class FoodsFragment(private val id:Int) : Fragment() {
         binding.rvFoods.adapter = foodsAdapter
         showPhotos()
         setClickListener()
+        observeShowingBag()
     }
 
     fun showPhotos() {
-        courseViewModel.getData(id)
+        foodsViewModel.getData(id)
         lifecycleScope.launch {
-            courseViewModel.foodState.collect { foodState ->
+            foodsViewModel.foodState.collect { foodState ->
                 when (foodState) {
                     is FoodState.Success -> {
                         //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
@@ -71,7 +77,7 @@ class FoodsFragment(private val id:Int) : Fragment() {
 
     private fun getFoodListWithPicture(){
         lifecycleScope.launch {
-            courseViewModel.foodState.collect{
+            foodsViewModel.foodState.collect{
                 when(it){
                     is FoodState.Success -> {
                         foodsAdapter.submitList(it.foodList)
@@ -102,13 +108,27 @@ class FoodsFragment(private val id:Int) : Fragment() {
                 }
                 bagFragment.arguments=bundle
 
-                if (!activity.bagIsShow)
-                    activity.showFragments(R.id.fcv_bag, bagFragment, "bagFragment", FragmentType.AI_MODE)
+                /*if (!activity.bagIsShow)
+                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentType.AI_MODE)
                 else {
+                    bagFragment.setBag()
+                }*/
+                if(!mainViewModel.isBagShow.value!!){
+                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentType.AI_MODE)
+                }else{
                     bagFragment.setBag()
                 }
                 activity.supportFragmentManager.executePendingTransactions()
             }
+        })
+    }
+
+    private fun observeShowingBag(){
+        mainViewModel.isBagShow.observe(viewLifecycleOwner, Observer {isBagShow ->
+            if(isBagShow){
+                changeSpanCount(2)
+            }else
+                changeSpanCount(3)
         })
     }
 
@@ -117,7 +137,6 @@ class FoodsFragment(private val id:Int) : Fragment() {
         layoutManager?.spanCount = newSpanCount
         binding.rvFoods.layoutManager = layoutManager
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
