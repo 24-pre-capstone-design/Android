@@ -14,7 +14,6 @@ import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.FragmentOrderBinding
 import com.capston2024.capstonapp.extension.OrderHistoryState
 import com.capston2024.capstonapp.extension.OrderState
-import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -50,28 +49,9 @@ class OrderFragment:Fragment() {
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         orderAdapter= OrderAdapter(requireContext())
         orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
-        mainViewModel.setPaymentId()
+        orderViewModel.getOrderHistory(mainViewModel.getPaymentId())
+
         binding.rvOrder.adapter=orderAdapter
-
-        //paymentid가져오기
-        lifecycleScope.launch {
-            mainViewModel.paymentIdState.collect{paymentIdState ->
-                when(paymentIdState){
-                    is PaymentIdState.Success -> {
-                        if(mainViewModel.getPaymentId()!=null) {
-                            orderViewModel.getOrderHistory(mainViewModel.getPaymentId()!!)
-                        }else{
-                            Log.d("orderfragment","mainviewmodel getpaymentid is null")
-                        }
-
-                    }
-                    is PaymentIdState.Loading->{}
-                    is PaymentIdState.Error->{}
-                }
-            }
-        }
-
-        //주문내역화면에 주문내역 보여주기
         lifecycleScope.launch {
             orderViewModel.orderHistoryState.collect{orderHistoryState ->
                 when(orderHistoryState){

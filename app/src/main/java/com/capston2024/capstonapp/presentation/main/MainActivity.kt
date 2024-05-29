@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
 
     private val mainViewModel: MainViewModel by viewModels()
     var bagFragment = BagFragment()
+    var aiFragment=AIFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         with(binding){
             btnAiMode.setOnClickListener {
                 if (binding.btnAiMode.text.equals(getString(R.string.start_ai))) {
-                    replaceFragment(AIFragment(), FragmentType.AI_MODE)
+                    replaceFragment(aiFragment, FragmentType.AI_MODE)
                 } else {
                     val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
                     replaceFragment(FoodsFragment(firstFoodsIDValue), FragmentType.BASIC_MODE)
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         }
 
         showFragments(R.id.fcv_menu, MenuFragment(), FragmentType.AI_MODE)
-        showFragments(R.id.fcv_main, AIFragment(),  FragmentType.AI_MODE)
+        showFragments(R.id.fcv_main, aiFragment,  FragmentType.AI_MODE)
         showFragments(R.id.fcv_order, OrderFragment(),  FragmentType.AI_MODE)
     }
 

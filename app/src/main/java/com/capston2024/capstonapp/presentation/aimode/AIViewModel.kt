@@ -55,13 +55,8 @@ class AIViewModel @Inject constructor(
         _foodsList.value=newList
     }
 
-    fun printPriceOfFood(foodName:String){
+    fun getFoodByName(foodName:String):  ResponseFoodDto.Food? {
         val foodList = foodsList.value
-        val matchedFood = foodList?.firstOrNull { it.name == foodName }
-        if (matchedFood != null) {
-            println("가격: ${matchedFood.price}")
-        } else {
-            println("해당 음식을 찾을 수 없습니다.")
-        }
+        return foodList?.firstOrNull { it.name.equals(foodName, ignoreCase = true) }
     }
 }

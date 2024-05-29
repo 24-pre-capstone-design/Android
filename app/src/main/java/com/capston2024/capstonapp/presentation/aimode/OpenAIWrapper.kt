@@ -18,6 +18,9 @@ import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
 import com.capston2024.capstonapp.presentation.aimode.data.EmbeddingHistory
 import com.capston2024.capstonapp.presentation.aimode.data.HistoryDbHelper
 import com.capston2024.capstonapp.presentation.aimode.data.SlidingWindow
+import com.capston2024.capstonapp.presentation.main.MainActivity
+import com.capston2024.capstonapp.presentation.main.MainViewModel
+import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -25,11 +28,13 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(val context: Context?) {
+class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val mainActivity: MainActivity, val mainViewModel: MainViewModel) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
     private val dbHelper = HistoryDbHelper(context)
+    val foodmenuf =  FoodMenuFunctions()
+    val cartManager = CartManager(aiViewModel, mainActivity,mainViewModel)
 
     init {
         conversation = mutableListOf(
@@ -63,27 +68,23 @@ class OpenAIWrapper(val context: Context?) {
         val chatCompletionRequest = chatCompletionRequest {
             model = ModelId(Constants.OPENAI_CHAT_MODEL)
             messages = chatWindowMessages
+
             // hardcoding weather function every time (for now)
             functions {
-                function {
-                    name = "currentWeather"
-                    description = "Get the current weather in a given location"
-                    parameters = OpenAIFunctions.currentWeatherParams()
-                }
-                function {
-                    name = CartManager.name()
-                    description =CartManager.description()
-                    parameters = CartManager.params()
-                }
                 function{
-                    name = FoodMenuFunctions.name()
-                    description = FoodMenuFunctions.description()
-                    parameters = FoodMenuFunctions.params()
+                    name = foodmenuf.name()
+                    description = foodmenuf.description()
+                    parameters = foodmenuf.params()
                 }
                 function {
                     name = AskWikipediaFunction.name()
                     description = AskWikipediaFunction.description()
                     parameters = AskWikipediaFunction.params()
+                }
+                function {
+                    name = cartManager.name()
+                    description = cartManager.description()
+                    parameters = cartManager.params()
                 }
 
 
@@ -113,19 +114,12 @@ class OpenAIWrapper(val context: Context?) {
             var functionResponse = ""
             var handled = true
             when (function.name) {
-                CartManager.name()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
-                    val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
-                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
-                    Log.i("LLM-WK", "Argument $item $quantity")
-                    functionResponse = CartManager.function(item, quantity)
-                }
-                FoodMenuFunctions.name()->{
+                foodmenuf.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
 
                     Log.i("LLM-WK", "Argument $foodName")
-                    functionResponse = FoodMenuFunctions.getFoodDetails(foodName)
+                    functionResponse = foodmenuf.getFoodDetails(foodName)
                 }
                 AskWikipediaFunction.name() -> {
                     val functionArgs =
@@ -135,6 +129,13 @@ class OpenAIWrapper(val context: Context?) {
                     Log.i("LLM-WK", "Argument $query ")
 
                     functionResponse = AskWikipediaFunction.function(query)
+                }
+                cartManager.name()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
+                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    Log.i("LLM-WK", "Argument $item $quantity")
+                    functionResponse = cartManager.foodOrderFunction(item, quantity)
                 }
 
                 else -> {

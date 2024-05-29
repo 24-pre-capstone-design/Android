@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,8 @@ import com.capston2024.capstonapp.databinding.FragmentAiBinding
 import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.presentation.aimode.data.ChatAdapter
 import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
+import com.capston2024.capstonapp.presentation.main.MainActivity
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +49,7 @@ class AIFragment : Fragment() {
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var messageList: MutableList<CustomChatMessage>
     private lateinit var openAIWrapper: OpenAIWrapper
+    private lateinit var mainViewModel: MainViewModel
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private var textToSpeech: TextToSpeech? = null
@@ -79,7 +83,8 @@ class AIFragment : Fragment() {
         //binding.rvAi.adapter = AIAdapter(messages)
         messageList = mutableListOf()
         chatAdapter = ChatAdapter(messageList)
-        openAIWrapper = OpenAIWrapper(requireContext())
+        mainViewModel= ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        openAIWrapper = OpenAIWrapper(requireContext(), aiViewModel, requireActivity() as MainActivity, mainViewModel)
 
         with(binding) {
             rvAi.layoutManager = LinearLayoutManager(requireContext())
@@ -96,9 +101,6 @@ class AIFragment : Fragment() {
                     is FoodState.Success -> {
                         //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
                         aiViewModel.updateFoodsList(foodState.foodList)
-                        println("음식 이름을 입력하세요:")
-                        val foodName = readLine() ?: ""
-                        aiViewModel.printPriceOfFood(foodName)
                     }
 
                     is FoodState.Error -> {
@@ -187,6 +189,7 @@ class AIFragment : Fragment() {
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
+                    textToSpeech?.setSpeechRate(3.0f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {

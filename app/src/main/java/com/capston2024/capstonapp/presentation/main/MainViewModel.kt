@@ -59,9 +59,9 @@ class MainViewModel @Inject constructor(
 
     //paymentId
     private val _paymentIdState = MutableStateFlow<PaymentIdState>(PaymentIdState.Loading)
-    //val paymentIdState: StateFlow<PaymentIdState> = _paymentIdState
+    val paymentIdState: StateFlow<PaymentIdState> = _paymentIdState
 
-    private var paymentId: Int? = 35
+    private var paymentId: Int ?= null
 
     private val _isBagShow = MutableLiveData<Boolean>(false)
     var isBagShow:LiveData<Boolean> = _isBagShow
@@ -104,7 +104,7 @@ class MainViewModel @Inject constructor(
                 _paymentIdState.value = PaymentIdState.Success(response.data)
                 paymentId = response.data
                 orderCheckDialogCallback?.handleOrderDetails(response.data)
-                Log.d("mainviewmodel", "paymentId: ${response.data}, peymentidstate is ${_paymentIdState.value}")
+                Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
             }.onFailure {
                 Log.e("mainviewmodel", "Error:${it.message}")
                 if (it is HttpException) {
@@ -119,7 +119,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
-    fun getPaymentId():Int = paymentId!!
+    fun getPaymentId():Int ?= paymentId
 
     init {
         _bagList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
