@@ -18,6 +18,8 @@ import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 class OrderFragment:Fragment() {
     private var _binding:FragmentOrderBinding?=null
@@ -85,9 +87,9 @@ class OrderFragment:Fragment() {
                 }
             }
         }
-
+        val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
         orderViewModel.orderTotalPrice.observe(viewLifecycleOwner) { totalPrice ->
-            binding.tvTotalPrice.text = getString(R.string.bag_price, totalPrice?:0)
+            binding.tvTotalPrice.text = getString(R.string.bag_price, formatter.format(totalPrice?:0))
         }
     }
 

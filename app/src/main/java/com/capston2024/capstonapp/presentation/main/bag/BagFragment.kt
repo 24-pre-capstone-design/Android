@@ -12,6 +12,8 @@ import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.FragmentBagBinding
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 class BagFragment : Fragment() {
     private var _binding: FragmentBagBinding? = null
@@ -40,13 +42,11 @@ class BagFragment : Fragment() {
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         bagAdapter= BagAdapter(requireContext())
         binding.rvBag.adapter=bagAdapter
-        val activity=requireActivity() as MainActivity
-        activity.bagIsShow=true
+        mainViewModel.setBagShow(true)
     }
 
     fun setBag(){
         val foodItem = arguments?.getSerializable("selectedFood") as Bag
-        Log.d("fooditem", "Item name: ${foodItem.name}")
         bagAdapter.addBagList(foodItem)
         binding.rvBag.scrollToPosition(bagAdapter.getBagList().size-1)
 
@@ -56,13 +56,13 @@ class BagFragment : Fragment() {
     fun setCount(){
         var numberOfFoods=bagAdapter.itemCount
         var count=bagAdapter.getTotalCount()
+        val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
         binding.tvCount.text=getString(R.string.bag_total_count,numberOfFoods,count)
-        binding.tvTotalPrice.text=getString(R.string.bag_price,bagAdapter.getTotalPrice())
+        binding.tvTotalPrice.text=getString(R.string.bag_price,formatter.format(bagAdapter.getTotalPrice()))
     }
 
     private fun clickButtons(){
         binding.btnOrder.setOnClickListener {
-            //Log.d("bagfragment", "bagfragment - btnOrder clicked!!!!")
             val dialog= OrderCheckDialog(bagAdapter, mainViewModel)
             dialog.isCancelable=false
             activity?.let { dialog.show(it.supportFragmentManager, "ConfirmDialog") }
@@ -72,24 +72,18 @@ class BagFragment : Fragment() {
     fun deleteBagFragment(){
         val fragmentManager=requireActivity().supportFragmentManager
         val bagFragment=fragmentManager.findFragmentById(R.id.fcv_bag)
-        Log.d("bagfragment is null?", "bag fragment is null?: ${bagFragment==null}")
         bagFragment?.let {
-            val activity=requireActivity() as MainActivity
-            activity.bagIsShow=false
+            mainViewModel.setBagShow(false)
 
             val transaction = fragmentManager.beginTransaction()
             transaction.remove(it)
             transaction.commit()
 
             fragmentManager.executePendingTransactions()
-
-            val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
-            Log.d("Fragment", "Fragment removed: $isFragmentRemoved")
         }
     }
 
     override fun onDestroyView() {
-        Log.d("destroy", "bagfragment is destroy")
         super.onDestroyView()
         _binding=null
     }

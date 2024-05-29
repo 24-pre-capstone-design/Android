@@ -8,6 +8,8 @@ import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.responseDto.ResponseOrderDto
 import com.capston2024.capstonapp.data.responseDto.ResponseOrderHistoryDto
 import com.capston2024.capstonapp.databinding.ItemOrderBinding
+import java.text.NumberFormat
+import java.util.Locale
 
 class OrderedItemAdapter(private val context: Context) :
     RecyclerView.Adapter<OrderedItemAdapter.OrderedItemViewHolder>() {
@@ -17,9 +19,10 @@ class OrderedItemAdapter(private val context: Context) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(orderItem: ResponseOrderHistoryDto.OrderResponseDtoList) {
             with(binding) {
+                val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
                 tvName.text = orderItem.foodName
                 tvCount.text = context.getString(R.string.bag_count, orderItem.quantity)
-                tvPrice.text = context.getString(R.string.bag_price, orderItem.sumOfOrderCost)
+                tvPrice.text = context.getString(R.string.bag_price, formatter.format((orderItem.sumOfOrderCost)))
             }
         }
     }

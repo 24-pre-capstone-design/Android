@@ -6,8 +6,8 @@
     <color name="main_benner_beige">#EAE0C5</color>
     <color name="main_aimode_gray">#D9D9D9</color>
 
-    <color name="ai_background_purple">#D8CEF6</color>
-    <color name="ai_background_input_purple">#E0E0F8</color>
+    <color name="ai_background_pink">#FFF3F3</color>
+    <color name="ai_background_input_pink">#F1D7D7</color>
 
     <color name="menu_background_beige">#F0EADA</color>
     <color name="menu_clicked_beige">#E3D8BA</color>
@@ -18,7 +18,7 @@
     <color name="bag_background_pink">#FFF3F3</color>
     <color name="bag_subtitle_gray">#9E9595</color>
     <color name="bag_price_blue">#044FA8</color>
-    <color name="bag_line_gray">#4a4f5a</color>
+    <color name="bag_line_gray">#B2A59B</color>
     <color name="bag_order_list_gray">#ECECEC</color>
     <color name="bag_order_pink">#FFA4A4</color>
 
@@ -26,8 +26,10 @@
     <color name="popup_order_orange">#FF9820</color>
     <color name="popup_background_grey">#A6333333</color>
 
-    <color name="order_background_green">#F5F7EC</color>
-    <color name="order_itembackground_brown">#EAE0C5</color>
+    <color name="order_background_pink">#FFF3F3</color>
+    <color name="order_item_background_pink">#FAEFEF</color>
+    <color name="order_item_under_bar_gray">#F0E6E6</color>
+    <color name="order_history_bar_gray">#B4B4B8</color>
     <color name="order_back_gray">#A9A9A9</color>
     <color name="order_pay_orange">#F27405</color>
 

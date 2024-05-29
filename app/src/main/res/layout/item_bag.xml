@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="400dp"
+    android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:padding="20dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="한돈생삼겹살"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="33dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/bag_delete"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:textColor="@color/black"
         android:elevation="20dp"
         android:background="@drawable/ic_rectangle_white"
@@ -39,17 +39,17 @@
         android:textSize="20sp"
         android:textColor="@color/bag_price_blue"
         android:inputType="number"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintTop_toBottomOf="@id/btn_delete"
         app:layout_constraintEnd_toEndOf="@id/btn_delete"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_plus"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
         android:text="+"
-        android:textSize="35sp"
+        android:textSize="25sp"
         android:elevation="20dp"
         android:background="@drawable/ic_rectangle_white"
         android:layout_marginTop="10dp"
@@ -69,10 +69,10 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_minus"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
         android:text="-"
-        android:textSize="35sp"
+        android:textSize="30sp"
         android:elevation="20dp"
         android:background="@drawable/ic_rectangle_white"
         android:layout_marginTop="10dp"

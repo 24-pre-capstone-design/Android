@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.ItemBagBinding
+import java.text.NumberFormat
+import java.util.Locale
 
 class BagAdapter(
     private val context: Context,
@@ -36,8 +38,9 @@ class BagAdapter(
         }
 
         fun bind(bagData: Bag) {
+            val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
             binding.tvFoodName.text = bagData.name
-            binding.tvFoodPrice.text = context.getString(R.string.bag_price, bagData.price)
+            binding.tvFoodPrice.text = context.getString(R.string.bag_price, formatter.format(bagData.price))
 
             val position = adapterPosition
             Log.d("position", "position: ${position}")
