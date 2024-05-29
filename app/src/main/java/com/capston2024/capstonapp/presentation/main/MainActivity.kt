@@ -116,6 +116,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 mainViewModel.changeMode(FragmentType.BASIC_MODE)
             }
         }
+
     }
 
     //foodfragment의 내용 가져오기

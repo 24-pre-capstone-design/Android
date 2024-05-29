@@ -100,6 +100,8 @@ class FoodsFragment(private val id:Int) : Fragment() {
             override fun onFoodItemClick(foodItem: ResponseFoodDto.Food) {
                 // 아이템을 BagFragment로 전달
                 //Toast.makeText(activity, "${foodItem.lastName}", Toast.LENGTH_SHORT).show()
+
+
                 Log.d("courseclick", "coursefragment course clicked item: ${foodItem.name}")
                 val activity = requireActivity() as MainActivity
                 val bagFragment=activity.bagFragment
@@ -115,9 +117,11 @@ class FoodsFragment(private val id:Int) : Fragment() {
                     bagFragment.setBag()
                 }
                 activity.supportFragmentManager.executePendingTransactions()
+
             }
         })
     }
+
 
     fun changeSpanCount(newSpanCount: Int) {
         val layoutManager = binding.rvFoods.layoutManager as? GridLayoutManager
@@ -131,57 +135,7 @@ class FoodsFragment(private val id:Int) : Fragment() {
         _binding = null
     }
 
-    /***
-     * functioncall용 전처리
-     * gpt 함수호출을 위한 파트 입니다.
-     * ***/
 
-    companion object {
-        private var instance :FoodsFragment?=null
-
-        fun name(): String{
-            return "FoodOrderFunction"
-        }
-        fun description(): String {
-            return "사용자의 주문을 받아 장바구니에 추가하는 함수입니다. "
-        }
-        fun params(): Parameters {
-            val params = Parameters.buildJsonObject {
-                put("type", "object")
-                putJsonObject("properties") {
-                    putJsonObject("item") {
-                        put("type", "string")
-                        put("description", "현재 주문할 음식의 이름 입니다.")
-                    }
-                    putJsonObject("quantity"){
-                        put("type","string")
-                        put("description","추가할 아이템의 양 입니다.")
-                    }
-                }
-                putJsonArray("required") {
-                    add("item")
-                    add("quantity")
-                }
-            }
-            return params
-        }
-        suspend fun foodOrderFunction(item: String, quantity: String):String{
-            val aiViewModel= instance?.aiViewModel
-            // 실제 함수 호출을 담당하는 메소드 입니다.
-            Log.d("courseclick", "coursefragment course clicked item: ${item}")
-            val foodItem: ResponseFoodDto.Food = aiViewModel?.printPriceOfFood(item) ?:
-
-
-            return "${item}을/를 ${quantity}만큼 장바구니에 넣었습니다!"
-            //여기 부분은 어느 정도 자율
-        }
-    }
-
-
-    /***
-     * functioncall용 전처리
-     * gpt 함수호출을 위한 파트 끝부분입니다.
-     * ***/
 
 
 }

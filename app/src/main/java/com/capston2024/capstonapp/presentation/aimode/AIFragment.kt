@@ -96,9 +96,7 @@ class AIFragment : Fragment() {
                    is FoodState.Success -> {
                        //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
                        aiViewModel.updateFoodsList(foodState.foodList)
-                       println("음식 이름을 입력하세요:")
-                       val foodName = readLine() ?: ""
-                       aiViewModel.printPriceOfFood(foodName)
+
                    }
 
                    is FoodState.Error -> {

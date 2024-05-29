@@ -9,7 +9,7 @@ import kotlinx.serialization.json.putJsonObject
 
 class FoodMenuFunctions {
 
-    companion object {
+    //companion object {
         private val menuItems = mapOf(
             "야채비빔밥" to Pair(10000, "SALE"),
             "육회비빔밥" to Pair(15000, "SALE"),
@@ -74,6 +74,6 @@ class FoodMenuFunctions {
             Log.i("FoodMenuFunctions", foodDetails)
             return foodDetails
         }
-    }
+    //}
 }
 

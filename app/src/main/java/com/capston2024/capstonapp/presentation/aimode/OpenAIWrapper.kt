@@ -26,11 +26,13 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(val context: Context?) {
+class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
     private val dbHelper = HistoryDbHelper(context)
+    val foodmenuf =  FoodMenuFunctions()
+    val cartManager = CartManager()
 
     init {
         conversation = mutableListOf(
@@ -64,17 +66,13 @@ class OpenAIWrapper(val context: Context?) {
         val chatCompletionRequest = chatCompletionRequest {
             model = ModelId(Constants.OPENAI_CHAT_MODEL)
             messages = chatWindowMessages
-            // hardcoding weather function every time (for now)
+
+                   // hardcoding weather function every time (for now)
             functions {
-                function {
-                    name = CartManager.name()
-                    description =CartManager.description()
-                    parameters = CartManager.params()
-                }
                 function{
-                    name = FoodMenuFunctions.name()
-                    description = FoodMenuFunctions.description()
-                    parameters = FoodMenuFunctions.params()
+                    name = foodmenuf.name()
+                    description = foodmenuf.description()
+                    parameters = foodmenuf.params()
                 }
                 function {
                     name = AskWikipediaFunction.name()
@@ -82,9 +80,9 @@ class OpenAIWrapper(val context: Context?) {
                     parameters = AskWikipediaFunction.params()
                 }
                 function {
-                    name = FoodsFragment.name()
-                    description = FoodsFragment.description()
-                    parameters = FoodsFragment.params()
+                    name = cartManager.name()
+                    description = cartManager.description()
+                    parameters = cartManager.params()
                 }
 
 
@@ -114,12 +112,12 @@ class OpenAIWrapper(val context: Context?) {
             var functionResponse = ""
             var handled = true
             when (function.name) {
-                FoodMenuFunctions.name()->{
+                foodmenuf.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
 
                     Log.i("LLM-WK", "Argument $foodName")
-                    functionResponse = FoodMenuFunctions.getFoodDetails(foodName)
+                    functionResponse = foodmenuf.getFoodDetails(foodName)
                 }
                 AskWikipediaFunction.name() -> {
                     val functionArgs =
@@ -130,12 +128,12 @@ class OpenAIWrapper(val context: Context?) {
 
                     functionResponse = AskWikipediaFunction.function(query)
                 }
-                FoodsFragment.name()->{
+                cartManager.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
                     val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
                     Log.i("LLM-WK", "Argument $item $quantity")
-                    functionResponse = FoodsFragment.foodOrderFunction(item, quantity)
+                    functionResponse = cartManager.foodOrderFunction(item, quantity)
                 }
 
                 else -> {
