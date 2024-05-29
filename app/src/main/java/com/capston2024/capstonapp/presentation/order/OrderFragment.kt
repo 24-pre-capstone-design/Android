@@ -14,6 +14,7 @@ import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.FragmentOrderBinding
 import com.capston2024.capstonapp.extension.OrderHistoryState
 import com.capston2024.capstonapp.extension.OrderState
+import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -49,8 +50,19 @@ class OrderFragment:Fragment() {
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         orderAdapter= OrderAdapter(requireContext())
         orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
-        orderViewModel.getOrderHistory(mainViewModel.getPaymentId())
 
+        mainViewModel.setPaymentId()
+        lifecycleScope.launch {
+            mainViewModel.paymentIdState.collect{paymentIdState ->
+                when(paymentIdState){
+                    is PaymentIdState.Success ->{
+                        orderViewModel.getOrderHistory(paymentIdState.paymentId)
+                    }
+                    is PaymentIdState.Loading -> {}
+                    is PaymentIdState.Error -> {}
+                }
+            }
+        }
         binding.rvOrder.adapter=orderAdapter
         lifecycleScope.launch {
             orderViewModel.orderHistoryState.collect{orderHistoryState ->
