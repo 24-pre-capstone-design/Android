@@ -18,6 +18,8 @@ import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
 import com.capston2024.capstonapp.presentation.aimode.data.EmbeddingHistory
 import com.capston2024.capstonapp.presentation.aimode.data.HistoryDbHelper
 import com.capston2024.capstonapp.presentation.aimode.data.SlidingWindow
+import com.capston2024.capstonapp.presentation.main.MainActivity
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 
 import kotlinx.serialization.json.jsonPrimitive
@@ -26,13 +28,13 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel) {
+class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val mainActivity: MainActivity, val mainViewModel: MainViewModel) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
     private val dbHelper = HistoryDbHelper(context)
     val foodmenuf =  FoodMenuFunctions()
-    val cartManager = CartManager()
+    val cartManager = CartManager(aiViewModel, mainActivity,mainViewModel)
 
     init {
         conversation = mutableListOf(
@@ -67,7 +69,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel) {
             model = ModelId(Constants.OPENAI_CHAT_MODEL)
             messages = chatWindowMessages
 
-                   // hardcoding weather function every time (for now)
+            // hardcoding weather function every time (for now)
             functions {
                 function{
                     name = foodmenuf.name()
