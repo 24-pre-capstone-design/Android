@@ -125,7 +125,12 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                 cartManager.FDFname()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
-                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    val quantity:String = if(functionArgs.containsKey("quantity")){
+                        decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    }else{
+                        "1"
+                    }
+
                     Log.i("LLM-WK", "Argument $foodName $quantity")
                     functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
                 }
