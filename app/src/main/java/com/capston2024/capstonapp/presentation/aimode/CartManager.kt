@@ -79,7 +79,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
     fun deleteFoodFromBag(item: String, quantity: Int){
         val foodItem = aiViewModel.getFoodByName(item)// 음식 이름으로 음식 객체를 가져오는 함수
         if(foodItem!=null){
-
+            mainViewModel.deleteFromBagList(Bag(foodItem.id, foodItem.name,foodItem.price,quantity), quantity)
         }else{
             Log.e("error", "Food item not found: $item")
         }

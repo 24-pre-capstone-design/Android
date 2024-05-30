@@ -51,7 +51,7 @@ class MainViewModel @Inject constructor(
     var eveTitle: String = ""
 
     private var orderCheckDialogCallback:OrderCheckDialogCallback?=null
-    private var hasPaymentIdBeenSet: Boolean = false
+    private var hasPaymentIdBeenSet:Boolean ?= null
 
     //paymentId
     private val _paymentIdState = MutableStateFlow<PaymentIdState>(PaymentIdState.Loading)
@@ -85,29 +85,36 @@ class MainViewModel @Inject constructor(
         this.orderCheckDialogCallback = callback
     }
 
-    fun setPaymentId() {
-        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않음
-        if (hasPaymentIdBeenSet) {
-            orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
+    fun setPaymentId(name:String) {
+        Log.d("mainviewmodel","set paymentId:")
+        if(name.equals("order")&&hasPaymentIdBeenSet==null){
+            Log.d("mainviewmodel","paymentId: $paymentId")
             return
         }
-        Log.d("mainviewmodel", "haspaymentidbeenset is false")
-        viewModelScope.launch {
-            Log.d("mainviewmodel", "viewModelScope.launch 시작")
-            authRepository.getPaymentId().onSuccess { response ->
-                // paymentId를 성공적으로 받아왔으므로, hasPaymentIdBeenSet를 true로 설정하고 LiveData를 업데이트
-                hasPaymentIdBeenSet = true
-                _paymentIdState.value = PaymentIdState.Success(response.data)
-                paymentId = response.data
-                orderCheckDialogCallback?.handleOrderDetails(response.data)
-                Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
-            }.onFailure {
-                Log.e("mainviewmodel", "Error:${it.message}")
-                if (it is HttpException) {
-                    val data = it.response()?.errorBody()?.byteString()?.toString()
-                    val errorBody = data?.substringAfter("message")
-                    if (errorBody != null) {
-                        Log.e("mainviewmodel", "paymentId error: ${errorBody}")
+        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않음
+        if (hasPaymentIdBeenSet==true) {
+            orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
+            Log.d("mainviewmodel","paymentId: $paymentId")
+            return
+        }else{
+            Log.d("mainviewmodel", "haspaymentidbeenset is false")
+            viewModelScope.launch {
+                Log.d("mainviewmodel", "viewModelScope.launch 시작")
+                authRepository.getPaymentId().onSuccess { response ->
+                    // paymentId를 성공적으로 받아왔으므로, hasPaymentIdBeenSet를 true로 설정하고 LiveData를 업데이트
+                    hasPaymentIdBeenSet = true
+                    _paymentIdState.value = PaymentIdState.Success(response.data)
+                    paymentId = response.data
+                    orderCheckDialogCallback?.handleOrderDetails(response.data)
+                    Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
+                }.onFailure {
+                    Log.e("mainviewmodel", "Error:${it.message}")
+                    if (it is HttpException) {
+                        val data = it.response()?.errorBody()?.byteString()?.toString()
+                        val errorBody = data?.substringAfter("message")
+                        if (errorBody != null) {
+                            Log.e("mainviewmodel", "paymentId error: ${errorBody}")
+                        }
                     }
                 }
             }

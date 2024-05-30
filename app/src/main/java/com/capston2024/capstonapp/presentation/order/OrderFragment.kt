@@ -51,7 +51,7 @@ class OrderFragment:Fragment() {
         orderAdapter= OrderAdapter(requireContext())
         orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
 
-        mainViewModel.setPaymentId()
+        //mainViewModel.setPaymentId("order")
         lifecycleScope.launch {
             mainViewModel.paymentIdState.collect{paymentIdState ->
                 when(paymentIdState){
