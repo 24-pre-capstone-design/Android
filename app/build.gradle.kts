@@ -93,8 +93,6 @@ dependencies {
     // timber
     implementation ("com.jakewharton.timber:timber:4.7.1")
 
-    //jsoup
-    //implementation ('org.jsoup:jsoup:1.14.3')
 }
 
 kapt {

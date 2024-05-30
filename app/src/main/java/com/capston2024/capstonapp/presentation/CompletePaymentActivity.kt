@@ -18,12 +18,13 @@ class CompletePaymentActivity : AppCompatActivity() {
         }, 5000)
 
         val imageView: ImageView = findViewById(R.id.randomImg)
+        /*
         StartActivity.fetchRandomImage { imageUrl ->
             StartActivity.loadImageFromUrl(imageUrl) { bitmap ->
                 runOnUiThread {
                     imageView.setImageBitmap(bitmap)
                 }
             }
-        }
+        }*/
     }
 }
