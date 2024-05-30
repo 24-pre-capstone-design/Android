@@ -1,12 +1,10 @@
 package com.capston2024.capstonapp.presentation.drink
 
-import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.ItemFoodBinding
-import com.capston2024.capstonapp.presentation.course.CourseViewHolder
 
 class DrinkViewHolder(
     private val binding:ItemFoodBinding,
