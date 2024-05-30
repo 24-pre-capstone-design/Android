@@ -9,15 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import com.capston2024.capstonapp.R
-import com.capston2024.capstonapp.data.FragmentType
+import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.databinding.FragmentMenuBinding
 import com.capston2024.capstonapp.extension.MenuState
 import com.capston2024.capstonapp.presentation.main.ChangeFragmentListener
 import com.capston2024.capstonapp.presentation.main.MainViewModel
-import com.capston2024.capstonapp.presentation.order.OrderFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -59,7 +56,7 @@ class MenuFragment : Fragment() {
 
 
     private fun setting(){
-        val modeValue: FragmentType = mainViewModel.mode.value ?: FragmentType.AI_MODE // 0은 기본값으로, null일 경우 사용됩니다.
+        val modeValue: FragmentMode = mainViewModel.mode.value ?: FragmentMode.AI_MODE // 0은 기본값으로, null일 경우 사용됩니다.
         menuAdapter = changeFragmentLIstener?.let { MenuAdapter(requireContext(), it) }!!
         binding.rvMenu.adapter = menuAdapter
         //menuAdapter.setMenuList()
@@ -67,20 +64,20 @@ class MenuFragment : Fragment() {
         makeButton(modeValue)
     }
 
-    private fun changeMenu(){
+   /* private fun changeMenu(){
         mainViewModel.menuID.observe(viewLifecycleOwner){menuID ->
             Log.d("menufragment","menufragment changemenu:${menuID}")
             menuAdapter.setSelectedMenuID(menuID)
         }
         //menuAdapter.setMenuList()
-    }
+    }*/
     private fun changeMode(){
         mainViewModel.mode.observe(viewLifecycleOwner){mode ->
             menuAdapter.updateMode(mode)
         }
     }
 
-    private fun makeButton(mode:FragmentType) {
+    private fun makeButton(mode:FragmentMode) {
         lifecycleScope.launch {
             mainViewModel.menuState.collect { menuState ->
                 when (menuState) {

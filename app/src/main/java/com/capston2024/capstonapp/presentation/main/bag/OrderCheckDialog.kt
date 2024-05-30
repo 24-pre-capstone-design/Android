@@ -92,7 +92,7 @@ class OrderCheckDialog(
         mainViewModel.setOrderCheckDialogCallback(this)
         mainViewModel.setPaymentId()
 
-        handleOrderDetails(mainViewModel.getPaymentId()!!)
+        //handleOrderDetails(mainViewModel.getPaymentId()!!)
 
 
         //mainViewModel.processOrder()

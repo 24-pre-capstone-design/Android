@@ -44,12 +44,12 @@ import java.util.Locale
 class AIFragment : Fragment() {
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
-    private val aiViewModel: AIViewModel by viewModels()
+    private lateinit var aiViewModel: AIViewModel
 
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var messageList: MutableList<CustomChatMessage>
-    private lateinit var openAIWrapper: OpenAIWrapper
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var openAIWrapper: OpenAIWrapper
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private var textToSpeech: TextToSpeech? = null
@@ -67,6 +67,7 @@ class AIFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setting()
+        Log.d("aifragment", "new aiframgent!!")
 
         //권한 설정
         requestPermission()
@@ -84,6 +85,7 @@ class AIFragment : Fragment() {
         messageList = mutableListOf()
         chatAdapter = ChatAdapter(messageList)
         mainViewModel= ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        aiViewModel = ViewModelProvider(requireActivity()).get(AIViewModel::class.java)
         openAIWrapper = OpenAIWrapper(requireContext(), aiViewModel, requireActivity() as MainActivity, mainViewModel)
 
         with(binding) {
@@ -146,7 +148,7 @@ class AIFragment : Fragment() {
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = openAIWrapper.chat(message)
+            val response = openAIWrapper.chat(message) ?: "Error: Wrapper is null"
             withContext(Dispatchers.Main) {
                 updateChatWithResponse(message, response)
             }
@@ -189,7 +191,7 @@ class AIFragment : Fragment() {
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(3.0f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(5.0f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {

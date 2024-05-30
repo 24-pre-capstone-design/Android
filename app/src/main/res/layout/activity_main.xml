@@ -57,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="@id/iv_top"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_ai_mode"
+        android:id="@+id/btn_change_mode"
         android:layout_width="160dp"
         android:layout_height="50dp"
         android:text="@string/main_aimode"

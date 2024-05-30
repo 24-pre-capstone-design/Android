@@ -3,18 +3,15 @@ package com.capston2024.capstonapp.presentation.main
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.FragmentType
-import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
+import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.data.responseDto.ResponseMenuDto
 import com.capston2024.capstonapp.domain.repository.AuthRepository
-import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.extension.MenuState
 import com.capston2024.capstonapp.extension.PaymentIdState
+import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
 import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -40,8 +36,8 @@ class MainViewModel @Inject constructor(
     val menuState: StateFlow<MenuState> = _menuState
 
     //ai모드인지 basic모드인지
-    private val _mode = MutableLiveData<FragmentType>()
-    val mode: LiveData<FragmentType> get() = _mode
+    private val _mode = MutableLiveData<FragmentMode>()
+    val mode: LiveData<FragmentMode> get() = _mode
 
     //menuid의 값 저장
     private val _menuID = MutableLiveData<Int>()
@@ -65,7 +61,6 @@ class MainViewModel @Inject constructor(
 
     private val _isBagShow = MutableLiveData<Boolean>(false)
     var isBagShow:LiveData<Boolean> = _isBagShow
-
     //foodCategory 만들기
     fun getMenu() {
         viewModelScope.launch {
@@ -117,13 +112,12 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
-    fun getPaymentId():Int ?= paymentId
+    /*fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
+    fun getPaymentId():Int = paymentId!!*/
 
     init {
         _bagList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
-        _mode.value = FragmentType.AI_MODE
+        _mode.value = FragmentMode.AI_MODE
     }
 
     fun addToOrderList(items: MutableList<Bag>) {
@@ -136,7 +130,7 @@ class MainViewModel @Inject constructor(
         _bagList.value?.clear()
     }
 
-    fun changeMode(modeNum: FragmentType) {
+    fun changeMode(modeNum: FragmentMode) {
         _mode.value = modeNum
     }
 

@@ -28,7 +28,12 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val mainActivity: MainActivity, val mainViewModel: MainViewModel) {
+class OpenAIWrapper(
+    val context: Context?,
+    private val aiViewModel: AIViewModel,
+    private val mainActivity: MainActivity,
+    private val mainViewModel: MainViewModel
+) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)

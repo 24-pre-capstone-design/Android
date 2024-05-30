@@ -2,23 +2,19 @@ package com.capston2024.capstonapp.presentation.aimode
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.aallam.openai.api.core.Parameters
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.FragmentType
+import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
-import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import java.io.Serializable
-import kotlin.collections.mutableMapOf
 
 class CartManager(private val aiViewModel: AIViewModel, private val mainActivity: MainActivity, private val mainViewModel: MainViewModel) {
 
@@ -69,7 +65,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
                     mainActivity.showFragments(
                         R.id.fcv_bag,
                         mainActivity.bagFragment,
-                        FragmentType.AI_MODE
+                        FragmentMode.AI_MODE
                     )
                 } else {
                     mainActivity.bagFragment.setBag()
