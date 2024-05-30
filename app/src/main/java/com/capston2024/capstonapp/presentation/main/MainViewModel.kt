@@ -61,9 +61,10 @@ class MainViewModel @Inject constructor(
     private val _paymentIdState = MutableStateFlow<PaymentIdState>(PaymentIdState.Loading)
     val paymentIdState: StateFlow<PaymentIdState> = _paymentIdState
 
-    private var paymentId: Int? = 35
+    private var paymentId: Int ?= null
 
-    private var isBagShow:Boolean=false
+    private val _isBagShow = MutableLiveData<Boolean>(false)
+    var isBagShow:LiveData<Boolean> = _isBagShow
 
     //foodCategory 만들기
     fun getMenu() {
@@ -84,39 +85,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-
-
-    //paymentId 설정
-
-    /*fun processOrder() {
-        // paymentId가 null이 아니면 바로 주문 처리
-        if (_paymentIdState.value != PaymentIdState.Loading) {
-            sendOrder(_paymentIdState.value!!)
-        } else {
-            // paymentId가 설정되지 않았으면 설정 후 주문 처리
-            setPaymentIdAndProcessOrder()
-        }
-    }
-    private fun sendOrder(paymentId: Int) {
-        // 주문 처리 로직 구현
-        Log.d("mainviewmodel", "주문 처리: paymentId = $paymentId")
-        // 실제 주문 처리 코드를 여기에 작성
-    }
-    private fun setPaymentIdAndProcessOrder() {
-        viewModelScope.launch {
-            setPaymentId() // paymentId 설정 시도
-            // paymentId가 설정될 때까지 대기 (LiveData를 관찰하는 방식으로 변경 가능)
-            paymentId.observeForever(object : Observer<Int?> {
-                override fun onChanged(newPaymentId: Int?) {
-                    if (newPaymentId != null) {
-                        paymentId.removeObserver(this)
-                        sendOrder(newPaymentId)
-                    }
-                }
-            })
-        }
-    }*/
     fun setOrderCheckDialogCallback(callback: OrderCheckDialogCallback) {
         this.orderCheckDialogCallback = callback
     }
@@ -136,7 +104,7 @@ class MainViewModel @Inject constructor(
                 _paymentIdState.value = PaymentIdState.Success(response.data)
                 paymentId = response.data
                 orderCheckDialogCallback?.handleOrderDetails(response.data)
-                Log.d("mainviewmodel", "paymentId: ${response.data}, peymentidstate is ${_paymentIdState.value}")
+                Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
             }.onFailure {
                 Log.e("mainviewmodel", "Error:${it.message}")
                 if (it is HttpException) {
@@ -151,7 +119,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
-    fun getPaymentId():Int = paymentId!!
+    fun getPaymentId():Int ?= paymentId
 
     init {
         _bagList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
@@ -177,12 +145,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun isVisibleOrderList(visible: Boolean) {
-        Log.d("mainviewmodel", "orderlist:$visible")
         _order.value = visible
     }
 
     fun setBagShow(bagShow:Boolean){
-        isBagShow=bagShow
+        _isBagShow.value=bagShow
     }
-    fun getBagShow():Boolean=isBagShow
 }

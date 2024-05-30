@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/order_background_green"
+    android:background="@color/order_background_pink"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
@@ -25,7 +25,7 @@
 
     <View
         android:id="@+id/v_line_bottom"
-        android:background="@color/black"
+        android:background="@color/bag_line_gray"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         app:layout_constraintBottom_toTopOf="@id/tv_total"/>
@@ -35,8 +35,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/order_total"
-        android:textSize="40sp"
-        android:layout_marginEnd="150dp"
+        android:textSize="27sp"
+        android:layout_marginEnd="100dp"
         app:layout_constraintBottom_toBottomOf="@id/tv_total_price"
         app:layout_constraintEnd_toStartOf="@id/tv_total_price"/>
 
@@ -45,8 +45,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="200000원"
-        android:textSize="40sp"
-        android:layout_marginBottom="20dp"
+        android:textSize="27sp"
+        android:layout_marginBottom="5dp"
         android:layout_marginEnd="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_pay"/>
@@ -54,7 +54,7 @@
     <ImageView
         android:id="@+id/iv_bottom"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         app:srcCompat="@drawable/ic_rectangle_benner_beige"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,9 +63,9 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_back"
         android:layout_width="150dp"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:text="@string/order_back"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:background="@color/order_back_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_pay"
@@ -73,10 +73,10 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_pay"
-        android:layout_width="400dp"
-        android:layout_height="100dp"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
         android:text="@string/order_pay"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:background="@drawable/ic_rectangle_payment_orange"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

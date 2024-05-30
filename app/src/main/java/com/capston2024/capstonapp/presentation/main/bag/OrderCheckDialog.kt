@@ -92,7 +92,7 @@ class OrderCheckDialog(
         mainViewModel.setOrderCheckDialogCallback(this)
         mainViewModel.setPaymentId()
 
-        //handleOrderDetails(35)
+        handleOrderDetails(mainViewModel.getPaymentId()!!)
 
 
         //mainViewModel.processOrder()
@@ -100,6 +100,8 @@ class OrderCheckDialog(
             handleOrderDetails(mainViewModel.getPaymentId())
             return
         }*/
+
+
         /*mainViewModel.setPaymentId()
         lifecycleScope.launch {
             mainViewModel.paymentIdState.collect { state ->
@@ -145,8 +147,7 @@ class OrderCheckDialog(
         val fragmentManager = requireActivity().supportFragmentManager
         var fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
         fragment?.let {
-            val activity = requireActivity() as MainActivity
-            activity.bagIsShow = false
+            mainViewModel.setBagShow(false)
 
             val transaction = fragmentManager.beginTransaction()
             transaction.remove(it)

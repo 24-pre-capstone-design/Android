@@ -34,30 +34,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="상태체크"
-        android:textSize="40sp"
+        android:textSize="30sp"
         android:layout_marginStart="30dp"
         app:layout_constraintEnd_toStartOf="@id/btn_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_ai"/>
 
-    <EditText
-        android:id="@+id/et_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter message"
-        android:textSize="40sp"
-        app:layout_constraintTop_toTopOf="@id/btn_input"
-        app:layout_constraintBottom_toBottomOf="@id/btn_input"
-        app:layout_constraintEnd_toStartOf="@id/btn_input"/>
-
     <Button
         android:id="@+id/btn_input"
-        android:layout_width="300dp"
-        android:layout_height="100dp"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
         android:text="입력"
-        android:textSize="50sp"
-        android:layout_marginEnd="100dp"
+        android:textSize="20sp"
+        android:layout_marginEnd="60dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

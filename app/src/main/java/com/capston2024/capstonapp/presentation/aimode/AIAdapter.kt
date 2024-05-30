@@ -1,13 +1,15 @@
+/*
 package com.capston2024.capstonapp.presentation.aimode
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Message
 import com.capston2024.capstonapp.data.MessageType
 import com.capston2024.capstonapp.databinding.ItemAichatBinding
-import com.capston2024.capstonapp.databinding.ItemAiinputBinding
+import com.capston2024.capstonapp.presentation.aimode.data.CustomChatMessage
 
 class AIAdapter(private val messages: List<Message>) :
     RecyclerView.Adapter<ViewHolder>() {
@@ -17,19 +19,21 @@ class AIAdapter(private val messages: List<Message>) :
         private const val VIEW_TYPE_AI_CHAT = 2
     }
 
-    inner class AIChatViewHolder(private val binding: ItemAichatBinding) :
+inner class AIChatViewHolder(private val binding: ItemAichatBinding) :
        ViewHolder(binding.root) {
-        fun bind(message: Message) {
+        fun bind(message: CustomChatMessage) {
             binding.tvAi.text = message.message
         }
     }
 
-    inner class AIInputViewHolder(private val binding:ItemAiinputBinding):
+    inner class AIInputViewHolder(private val binding:ItemAichatBinding):
     ViewHolder(binding.root){
-        fun bind(message: Message){
-            binding.tvUserInput.text=message.message
+        fun bind(message: CustomChatMessage){
+            binding.tvAi.text=message.message
+            binding.tvAi.resources.getColor(R.color.ai_background_input_purple)
         }
     }
+
 
     override fun getItemViewType(position: Int): Int {
         return when (messages[position].type) {
@@ -41,7 +45,7 @@ class AIAdapter(private val messages: List<Message>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_AI_INPUT -> AIInputViewHolder(ItemAiinputBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_AI_INPUT -> AIInputViewHolder(ItemAichatBinding.inflate(inflater, parent, false))
             VIEW_TYPE_AI_CHAT -> AIChatViewHolder(ItemAichatBinding.inflate(inflater, parent, false))
             else -> throw IllegalArgumentException("Invalid view type")
         }
@@ -56,3 +60,4 @@ class AIAdapter(private val messages: List<Message>) :
 
     override fun getItemCount(): Int = messages.size
 }
+*/

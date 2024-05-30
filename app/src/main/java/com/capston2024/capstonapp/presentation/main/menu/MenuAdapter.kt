@@ -35,7 +35,8 @@ class MenuAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(menuData: ResponseMenuDto.Menu, position: Int) {
             binding.btnMenu.text = menuData.name // 버튼 텍스트 설정
-            // mode 값에 따라 버튼의 배경을 변경합니다.
+
+            // mode 값에 따라 버튼의 배경을 변경
             if (mode == FragmentType.BASIC_MODE) {
                 if (selectedPosition == position) {
                     Log.d("menuadapter", "selectedmenu:${menuData.name}")

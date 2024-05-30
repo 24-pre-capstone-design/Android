@@ -6,7 +6,7 @@
     android:padding="20dp"
     android:layout_margin="20dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/ai_background_input_purple">
+    android:background="@color/ai_background_input_pink">
 
 
     <TextView
