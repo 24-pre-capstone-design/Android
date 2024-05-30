@@ -3,6 +3,7 @@ package com.capston2024.capstonapp.presentation.main
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,8 @@ import com.capston2024.capstonapp.data.responseDto.ResponseMenuDto
 import com.capston2024.capstonapp.domain.repository.AuthRepository
 import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.extension.MenuState
+import com.capston2024.capstonapp.extension.PaymentIdState
+import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,12 +27,12 @@ import kotlin.properties.Delegates
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authRepository: AuthRepository
-): ViewModel() {
-    private val _orderList = MutableLiveData<MutableList<Bag>>()
-    val orderList: LiveData<MutableList<Bag>>
-        get() = _orderList
+) : ViewModel() {
+    private val _bagList = MutableLiveData<MutableList<Bag>>()
+    val bagList: LiveData<MutableList<Bag>>
+        get() = _bagList
 
-    private val _firstMenu= MutableLiveData<ResponseMenuDto.Menu>()
+    private val _firstMenu = MutableLiveData<ResponseMenuDto.Menu>()
     val firstMenu: LiveData<ResponseMenuDto.Menu> = _firstMenu
 
     // MutableSharedFlow에서 MutableStateFlow로 변경
@@ -38,69 +41,114 @@ class MainViewModel @Inject constructor(
 
     //ai모드인지 basic모드인지
     private val _mode = MutableLiveData<FragmentType>()
-    var mode:LiveData<FragmentType> = _mode
+    val mode: LiveData<FragmentType> get() = _mode
 
     //menuid의 값 저장
-    private val _menuID=MutableLiveData<Int>()
-    var menuID:LiveData<Int> = _menuID
+    private val _menuID = MutableLiveData<Int>()
+    var menuID: LiveData<Int> = _menuID
 
     //주문내역을 보이게 할지 말지 결정
-    private val _order=MutableLiveData<Boolean>(false)
-    var order:LiveData<Boolean> = _order
+    private val _order = MutableLiveData<Boolean>(false)
+    var order: LiveData<Boolean> = _order
 
     //직전의 배너 상단의 이름 저장
-    var eveTitle:String=""
+    var eveTitle: String = ""
 
-    init {
-        _orderList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
-    }
+    private var orderCheckDialogCallback:OrderCheckDialogCallback?=null
+    private var hasPaymentIdBeenSet: Boolean = false
 
-    fun addToOrderList(items: MutableList<Bag>) {
-        val currentList = _orderList.value ?: mutableListOf()
-        currentList.addAll(items)
-        _orderList.value = currentList
-    }
+    //paymentId
+    private val _paymentIdState = MutableStateFlow<PaymentIdState>(PaymentIdState.Loading)
+    val paymentIdState: StateFlow<PaymentIdState> = _paymentIdState
 
-    fun clearOrderList() {
-        _orderList.value?.clear()
-    }
+    private var paymentId: Int ?= null
 
-    fun showAIModeButton(type:Int):Boolean{
-        if(type==0) return true
-        else return false
-    }
+    private val _isBagShow = MutableLiveData<Boolean>(false)
+    var isBagShow:LiveData<Boolean> = _isBagShow
 
-    fun getMenu(){
+    //foodCategory 만들기
+    fun getMenu() {
         viewModelScope.launch {
             authRepository.getMenuList().onSuccess { response ->
                 _menuState.value = MenuState.Success(response.makeMenuList()) // emit 대신 value 사용
                 //Log.d("Success","Success~~:mainviewmodel")
-                _firstMenu.value=response.makeMenuList()[0]
+                _firstMenu.value = response.makeMenuList()[0]
             }.onFailure {
-                Log.e("Error","Error:${it.message}")
+                Log.e("Error", "Error:${it.message}")
                 if (it is HttpException) {
                     val data = it.response()?.errorBody()?.byteString()?.toString()
                     val errorBody = data?.substringAfter("message")
                     if (errorBody != null) {
-                        Log.e("erorr", "message${errorBody}")
+                        Log.e("mainviewmodel", "message${errorBody}")
                     }
-                    _menuState.value = MenuState.Error // emit 대신 value 사용
+                }
+            }
+        }
+    }
+    fun setOrderCheckDialogCallback(callback: OrderCheckDialogCallback) {
+        this.orderCheckDialogCallback = callback
+    }
+
+    fun setPaymentId() {
+        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않음
+        if (hasPaymentIdBeenSet) {
+            orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
+            return
+        }
+        Log.d("mainviewmodel", "haspaymentidbeenset is false")
+        viewModelScope.launch {
+            Log.d("mainviewmodel", "viewModelScope.launch 시작")
+            authRepository.getPaymentId().onSuccess { response ->
+                // paymentId를 성공적으로 받아왔으므로, hasPaymentIdBeenSet를 true로 설정하고 LiveData를 업데이트
+                hasPaymentIdBeenSet = true
+                _paymentIdState.value = PaymentIdState.Success(response.data)
+                paymentId = response.data
+                orderCheckDialogCallback?.handleOrderDetails(response.data)
+                Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
+            }.onFailure {
+                Log.e("mainviewmodel", "Error:${it.message}")
+                if (it is HttpException) {
+                    val data = it.response()?.errorBody()?.byteString()?.toString()
+                    val errorBody = data?.substringAfter("message")
+                    if (errorBody != null) {
+                        Log.e("mainviewmodel", "paymentId error: ${errorBody}")
+                    }
                 }
             }
         }
     }
 
-    fun changeMode(modeNum:FragmentType){
-        _mode.value=modeNum
-       // Log.d("mainviewmodel","mainviewmodel-changemode:${modeNum}")
+    fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
+    fun getPaymentId():Int ?= paymentId
+
+    init {
+        _bagList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
+        _mode.value = FragmentType.AI_MODE
     }
 
-    fun changeMenuID(menuID:Int){
-        _menuID.value=menuID
+    fun addToOrderList(items: MutableList<Bag>) {
+        val currentList = _bagList.value ?: mutableListOf()
+        currentList.addAll(items)
+        _bagList.value = currentList
     }
 
-    fun isVisibleOrderList(visible:Boolean){
-        Log.d("mainviewmodel","orderlist:$visible")
-        _order.value=visible
+    fun clearOrderList() {
+        _bagList.value?.clear()
+    }
+
+    fun changeMode(modeNum: FragmentType) {
+        _mode.value = modeNum
+    }
+
+    fun changeMenuID(menuID: Int) {
+        _menuID.value = menuID
+    }
+
+    fun isVisibleOrderList(visible: Boolean) {
+        _order.value = visible
+    }
+
+    fun setBagShow(bagShow:Boolean){
+        _isBagShow.value=bagShow
     }
 }

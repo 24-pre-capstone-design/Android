@@ -8,19 +8,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
-import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.ItemBagBinding
-import com.capston2024.capstonapp.presentation.main.MainViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 class BagAdapter(
     private val context: Context,
-    private val viewModel: MainViewModel
+    //private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
     private val inflater by lazy { LayoutInflater.from(context) }
-    private var bagList: MutableList<Bag> = mutableListOf()
     private var countList: MutableList<Int> = mutableListOf()
-    private var orderList: MutableList<Bag> = mutableListOf()
+    private var bagList: MutableList<Bag> = mutableListOf()
 
     inner class BagViewHolder(private val binding: ItemBagBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -40,19 +38,20 @@ class BagAdapter(
         }
 
         fun bind(bagData: Bag) {
+            val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
             binding.tvFoodName.text = bagData.name
-            binding.tvFoodPrice.text = context.getString(R.string.bag_price, bagData.price)
+            binding.tvFoodPrice.text = context.getString(R.string.bag_price, formatter.format(bagData.price))
 
             val position = adapterPosition
             Log.d("position", "position: ${position}")
-            val count = orderList[position].count // 해당 위치의 수량 가져오기.
+            val count = bagList[position].count // 해당 위치의 수량 가져오기.
             binding.tvCount.text = context.getString(R.string.bag_count, count)
         }
 
         private fun clickPlusButton(position: Int) {
             val currentCount = countList[position] //binding.tvCount.text.toString().substringBefore("개").toInt()
             countList[position] = currentCount + 1
-            orderList[position].count=currentCount+1
+            bagList[position].count=currentCount+1
             val countMessage = context.getString(R.string.bag_count, currentCount + 1)
             binding.tvCount.text = countMessage
             setCount()
@@ -64,9 +63,8 @@ class BagAdapter(
 
             if (currentCount == 1) {
                 if (position != RecyclerView.NO_POSITION) {
-                    bagList.removeAt(position)
                     countList.removeAt(position)
-                    orderList.removeAt(position)
+                    bagList.removeAt(position)
                     Log.d("list size: ", "bagadapter list size: ${bagList.size}")
                 }
                 if (bagList.size == 0)
@@ -75,7 +73,7 @@ class BagAdapter(
                 return
             }else{
                 countList[position]=currentCount-1
-                orderList[position].count=currentCount-1
+                bagList[position].count=currentCount-1
                 val countMessage = context.getString(R.string.bag_count, currentCount - 1)
                 binding.tvCount.text = countMessage
                 Log.d("currentCount", "bagadapter Current count: ${countList[position]}")
@@ -85,9 +83,8 @@ class BagAdapter(
         }
 
         private fun deleteItem(position: Int) {
-            bagList.removeAt(position)
             countList.removeAt(position)
-            orderList.removeAt(position)
+            bagList.removeAt(position)
 
             if (bagList.isEmpty()) {
                 deleteBagFragment()
@@ -154,33 +151,32 @@ class BagAdapter(
         if (existingItem != null) {
             val existingIndex = bagList.indexOf(existingItem)
             countList[existingIndex] = (countList[existingIndex]) + 1
-            orderList[existingIndex].count=(orderList[existingIndex].count)+1
+            bagList[existingIndex].count=(bagList[existingIndex].count)+1
         } else {
             // 새로운 아이템이라면 리스트에 추가
-            bagList.add(bag)
             countList.add(1)
-            orderList.add(Bag(bag.name,bag.price,1))
+            bagList.add(Bag(bag.id, bag.name,bag.price,1))
         }
         notifyDataSetChanged()
     }
 
     fun getBagList():List<Bag> = bagList
-    fun addOrderList(){
-        viewModel.addToOrderList(orderList)
+
+    // bagList를 초기화하는 함수를 정의합니다.
+    fun initializeBagList() {
+        bagList = mutableListOf()
     }
     fun getTotalCount(): Int{
         var total=0
-        for(i in orderList)
+        for(i in bagList)
             total+=i.count
         return total
     }
 
     fun getTotalPrice(): Int{
         var price=0
-        for(i in 0..<orderList.size)
-            price+=orderList[i].count*orderList[i].price
+        for(i in 0..<bagList.size)
+            price+=bagList[i].count*bagList[i].price
         return price
     }
-
-
 }

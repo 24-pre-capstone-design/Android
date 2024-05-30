@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/start_welcome"
                 android:textColor="@color/white"
-                android:textSize="50dp" />
+                android:textSize="30dp" />
         </LinearLayout>
     </LinearLayout>
 

@@ -11,7 +11,11 @@
 
 ## Branch Name
 "Label/요약 내용"형식으로 작성    
+<<<<<<< HEAD
 ex) Feat/start-screen
+=======
+ex) Feat/초기 화면 개발
+>>>>>>> d57da330fedace9faa94eb07aeeba6496cf631f6
 
 ## Code
 * 클래스명: 명사 또는 명사구로 작성

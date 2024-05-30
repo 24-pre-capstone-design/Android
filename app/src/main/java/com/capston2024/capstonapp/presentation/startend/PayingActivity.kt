@@ -1,15 +1,23 @@
 package com.capston2024.capstonapp.presentation.startend
 
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/java/com/capston2024/capstonapp/presentation/PayingActivity.kt
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.Dialog
 =======
 >>>>>>> b0fc477b21bf69f7158df35c3b1e4542384594bd:app/src/main/java/com/capston2024/capstonapp/presentation/startend/PayingActivity.kt
+=======
+
+import android.animation.ObjectAnimator
+import android.app.Activity
+import android.app.Dialog
+>>>>>>> d57da330fedace9faa94eb07aeeba6496cf631f6
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/java/com/capston2024/capstonapp/presentation/PayingActivity.kt
 import android.widget.Button
 import android.widget.ProgressBar
@@ -20,6 +28,16 @@ import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.databinding.ActivityPayingBinding
 
 class PayingActivity : AppCompatActivity() {
+=======
+import android.widget.Button
+import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
+import com.capston2024.capstonapp.R
+import com.capston2024.capstonapp.databinding.ActivityPayingBinding
+
+
+class PayingActivity : Activity() {
+>>>>>>> d57da330fedace9faa94eb07aeeba6496cf631f6
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

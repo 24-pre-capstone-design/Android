@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:text="한식 다이어리를 \n이용해 주셔서 감사합니다.\n"
                 android:textColor="@color/white"
-                android:textSize="50dp" />
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/nextMessage"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="잠시 후 초기 화면으로 이동합니다.\n"
                 android:textColor="@color/white"
-                android:textSize="35dp" />
+                android:textSize="15dp" />
 
 
         </LinearLayout>
