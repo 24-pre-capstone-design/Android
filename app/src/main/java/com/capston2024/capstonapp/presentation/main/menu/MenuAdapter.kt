@@ -91,5 +91,4 @@ class MenuAdapter(
         selectedPosition = menuID - 1
         notifyDataSetChanged()
     }
-
 }

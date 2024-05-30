@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.ItemBagBinding
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
 class BagAdapter(
     private val context: Context,
-    //private val viewModel: MainViewModel
+    private val bagListUpdateListener: BagListUpdateListener
 ) : RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
     private val inflater by lazy { LayoutInflater.from(context) }
     private var countList: MutableList<Int> = mutableListOf()
@@ -55,6 +56,7 @@ class BagAdapter(
             val countMessage = context.getString(R.string.bag_count, currentCount + 1)
             binding.tvCount.text = countMessage
             setCount()
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -69,6 +71,7 @@ class BagAdapter(
                 }
                 if (bagList.size == 0)
                     deleteBagFragment()
+                bagListUpdateListener.onBagListUpdated(bagList)
                 notifyDataSetChanged()
                 return
             }else{
@@ -79,6 +82,7 @@ class BagAdapter(
                 Log.d("currentCount", "bagadapter Current count: ${countList[position]}")
             }
             setCount()
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -92,6 +96,7 @@ class BagAdapter(
             else{
                 setCount()
             }
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -157,6 +162,12 @@ class BagAdapter(
             countList.add(1)
             bagList.add(Bag(bag.id, bag.name,bag.price,1))
         }
+        bagListUpdateListener.onBagListUpdated(bagList)
+        notifyDataSetChanged()
+    }
+
+    fun updateList(newList:MutableList<Bag>){
+        bagList=newList
         notifyDataSetChanged()
     }
 

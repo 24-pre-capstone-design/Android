@@ -68,6 +68,7 @@ class MainViewModel @Inject constructor(
                 _menuState.value = MenuState.Success(response.makeMenuList()) // emit 대신 value 사용
                 //Log.d("Success","Success~~:mainviewmodel")
                 _firstMenu.value = response.makeMenuList()[0]
+                Log.d("mainviewmodel","firstmenu: ${_firstMenu.value?.name}")
             }.onFailure {
                 Log.e("Error", "Error:${it.message}")
                 if (it is HttpException) {
@@ -120,13 +121,34 @@ class MainViewModel @Inject constructor(
         _mode.value = FragmentMode.AI_MODE
     }
 
-    fun addToOrderList(items: MutableList<Bag>) {
+    fun addToBagList(items: Bag) {
         val currentList = _bagList.value ?: mutableListOf()
-        currentList.addAll(items)
+        currentList.add(items)
         _bagList.value = currentList
     }
 
-    fun clearOrderList() {
+    //입력받은 음식정보가 baglist에 들어있다면 baglist의 개수와 입력받은 개수를 비교하여
+    //입력받은 개수가 baglist에서의 음식 개수보다 작으면 baglist에서 음식 개수를 줄이고
+    //아니면 baglist에서 해당 음식을 삭제
+    fun deleteFromBagList(items:Bag, quantity:Int){
+        if(_bagList.value!=null){
+            for(i in 0 until _bagList.value!!.size){
+                if(items== _bagList.value!![i]){
+                    if(_bagList.value!![i].count>quantity){
+                        _bagList.value!![i].count-=quantity
+                    }else{
+                        _bagList.value!!.removeAt(i)
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateBagList(updatedList:MutableList<Bag>){
+        _bagList.value=updatedList
+    }
+
+    fun clearBagList() {
         _bagList.value?.clear()
     }
 

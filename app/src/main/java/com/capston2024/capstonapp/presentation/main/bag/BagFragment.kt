@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
@@ -15,7 +16,7 @@ import com.capston2024.capstonapp.presentation.main.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
-class BagFragment : Fragment() {
+class BagFragment : Fragment(), BagListUpdateListener {
     private var _binding: FragmentBagBinding? = null
     private val binding:FragmentBagBinding
         get() = requireNotNull(_binding){ "바인딩 객체 생성 안됨" }
@@ -40,7 +41,7 @@ class BagFragment : Fragment() {
 
     private fun setViewModelAndAdapter(){
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        bagAdapter= BagAdapter(requireContext())
+        bagAdapter= BagAdapter(requireContext(), this)
         binding.rvBag.adapter=bagAdapter
         mainViewModel.setBagShow(true)
     }
@@ -51,6 +52,10 @@ class BagFragment : Fragment() {
         binding.rvBag.scrollToPosition(bagAdapter.getBagList().size-1)
 
         setCount()
+
+        mainViewModel.bagList.observe(viewLifecycleOwner, Observer { bagList ->
+            bagAdapter.updateList(bagList)
+        })
     }
 
     fun setCount(){
@@ -81,6 +86,10 @@ class BagFragment : Fragment() {
 
             fragmentManager.executePendingTransactions()
         }
+    }
+
+    override fun onBagListUpdated(updatedList: MutableList<Bag>) {
+        mainViewModel.updateBagList(updatedList)
     }
 
     override fun onDestroyView() {

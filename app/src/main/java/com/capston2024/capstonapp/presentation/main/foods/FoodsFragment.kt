@@ -52,6 +52,7 @@ class FoodsFragment(private var id:Int) : Fragment() {
     }
 
     fun showPhotos() {
+        foodsViewModel.getData(id)
         mainViewModel.menuID.observe(viewLifecycleOwner){ menuId ->
             foodsViewModel.getData(menuId)
         }

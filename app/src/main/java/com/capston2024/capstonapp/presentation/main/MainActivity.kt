@@ -58,10 +58,8 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 if (binding.btnChangeMode.text == getString(R.string.start_ai)) {
                     if (aiFragment.isAdded) {
                         transaction.show(aiFragment)
-                        Log.d("mainactivity", "show aifragment")
                     } else {
                         transaction.add(R.id.fcv_main, aiFragment, "aiFragment")
-                        Log.d("mainactivity", "add aifragment")
                     }
                     foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
                     foodsFragment?.let {
@@ -71,13 +69,15 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 } else {
                     foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
 
-                    if (foodsFragment == null) {
                         val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
                         foodsFragment = FoodsFragment(firstFoodsIDValue)
+                        mainViewModel.changeMenuID(firstFoodsIDValue)
                         transaction.add(R.id.fcv_main, foodsFragment!!, "foodsFragment")
-                    } else {
+                    /*} else {
+                        val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
+                        mainViewModel.changeMenuID(firstFoodsIDValue)
                         transaction.show(foodsFragment!!)
-                    }
+                    }*/
                     transaction.hide(aiFragment)
                     mainViewModel.changeMode(FragmentMode.BASIC_MODE)
                     replaceMenuFragment(MenuFragment())
@@ -241,18 +241,18 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     override fun replaceFragment(type: FragmentMode, id:Int) {
         foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
 
-        if (foodsFragment == null) {
+        //if (foodsFragment == null) {
             foodsFragment = FoodsFragment(id)
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fcv_main, foodsFragment!!, "foodsFragment")
                 .commit()
-        } else {
+        /*} else {
             // 기존 프래그먼트의 데이터를 업데이트하는 로직 추가 (필요시)
-            foodsFragment!!.updateData(id)
+            //foodsFragment!!.updateData(id)
             supportFragmentManager.beginTransaction()
                 .show(foodsFragment!!)
                 .commit()
-        }
+        }*/
 
         //mode 입력
         mainViewModel.changeMode(type)

@@ -55,13 +55,13 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         val foodItem = aiViewModel.getFoodByName(item)// 음식 이름으로 음식 객체를 가져오는 함수
         if (foodItem != null) {
             mainActivity.lifecycleScope.launch {
-                val bag = Bag(foodItem.id, foodItem.name, foodItem.price, quantity)
-                val bundle = Bundle().apply {
-                    putSerializable("selectedFood", bag as Serializable)
-                }
-                mainActivity.bagFragment.arguments = bundle
-
                 if (!mainViewModel.isBagShow.value!!) {
+                    val bag = Bag(foodItem.id, foodItem.name, foodItem.price, quantity)
+                    //mainViewModel.addToBagList(bag)
+                    val bundle = Bundle().apply {
+                        putSerializable("selectedFood", bag as Serializable)
+                    }
+                    mainActivity.bagFragment.arguments = bundle
                     mainActivity.showFragments(
                         R.id.fcv_bag,
                         mainActivity.bagFragment,
@@ -73,6 +73,14 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
                 mainActivity.supportFragmentManager.executePendingTransactions()
             }
         } else {
+            Log.e("error", "Food item not found: $item")
+        }
+    }
+    fun deleteFoodFromBag(item: String, quantity: Int){
+        val foodItem = aiViewModel.getFoodByName(item)// 음식 이름으로 음식 객체를 가져오는 함수
+        if(foodItem!=null){
+
+        }else{
             Log.e("error", "Food item not found: $item")
         }
     }
