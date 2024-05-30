@@ -60,7 +60,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
         )
         conversation.add(userMessage)
 
-
         // implement sliding window. hardcode 50 tokens used for the weather function definitions.
         val chatWindowMessages = SlidingWindow.chatHistoryToWindow(conversation, reservedForFunctionsTokens=50)
 
@@ -76,11 +75,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     description = foodmenuf.description()
                     parameters = foodmenuf.params()
                 }
-                function {
-                    name = AskWikipediaFunction.name()
-                    description = AskWikipediaFunction.description()
-                    parameters = AskWikipediaFunction.params()
-                }
+
                 function {
                     name = cartManager.name()
                     description = cartManager.description()
@@ -121,15 +116,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     Log.i("LLM-WK", "Argument $foodName")
                     functionResponse = foodmenuf.getFoodDetails(foodName)
                 }
-                AskWikipediaFunction.name() -> {
-                    val functionArgs =
-                        function.argumentsAsJson() ?: error("arguments field is missing")
-                    val query = functionArgs.getValue("query").jsonPrimitive.content
-
-                    Log.i("LLM-WK", "Argument $query ")
-
-                    functionResponse = AskWikipediaFunction.function(query)
-                }
                 cartManager.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
@@ -150,7 +136,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     )
                 }
             }
-
 
             if (handled)
             {
@@ -201,18 +186,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
         return chatResponse
     }
 
-    /** OpenAI generate image from prompt text.
-     * Returns a URL to the image, must be downloaded or
-     * rendered from the URL (no bytes returned from API)
-     * @return image URL or empty string */
-    suspend fun imageURL(prompt: String): String {
-        val imageRequest = ImageCreation(prompt = prompt, model = ModelId(Constants.OPENAI_IMAGE_MODEL))
-
-        // OpenAI network request
-        val images: List<ImageURL> = openAI.imageURL(imageRequest)
-
-        return if (images.isEmpty()) "" else images[0].url
-    }
     fun decodeUnicodeEscapes(encoded: String): String {
         return encoded.split("\\\\u".toRegex()) // 역슬래시와 u로 분리
             .filter { it.isNotEmpty() } // 빈 문자열 제거
