@@ -33,21 +33,25 @@ class StartActivity : Activity() {
         }
 
         val imageView: ImageView = findViewById(R.id.randomImg)
+
+        val url = "http://15.164.96.227:3000"
+        /*
         fetchRandomImage { imageUrl ->
             loadImageFromUrl(imageUrl) { bitmap ->
                 runOnUiThread {
                     imageView.setImageBitmap(bitmap)
                 }
             }
-        }
+        }*/
     }
 
     companion object {
+        /*
         fun fetchRandomImage(callback: (String) -> Unit) {
             val client = OkHttpClient()
 
             val request = Request.Builder()
-                .url("https://reqres.in/api/users")
+                //.url("https://reqres.in/api/users")
                 .build()
 
             thread {
@@ -81,7 +85,7 @@ class StartActivity : Activity() {
                     callback(null)
                 }
             }
-        }
+        }*/
     }
 
 
