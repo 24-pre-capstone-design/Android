@@ -2,8 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="400dp"
     android:layout_height="wrap_content"
-    android:paddingBottom="20dp"
-    android:background="@color/bag_background_green"
+    android:padding="20dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView

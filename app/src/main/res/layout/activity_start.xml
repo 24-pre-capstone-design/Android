@@ -15,7 +15,12 @@
         android:orientation="vertical">
 
         <ImageView
+<<<<<<< HEAD
             android:id="@+id/logo"
+=======
+            android:id="@+id/iv_logo"
+            android:src="@drawable/img_diary_logo"
+>>>>>>> b0fc477b21bf69f7158df35c3b1e4542384594bd
             android:layout_width="match_parent"
             android:layout_height="450dp"
             android:src="@drawable/img_diary_logo"></ImageView>
@@ -27,10 +32,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/welcomeMessage"
+                android:id="@+id/tv_welcome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="\n한식 다이어리에 \n오신 것을 환영합니다.\n"
+                android:text="@string/start_welcome"
                 android:textColor="@color/white"
                 android:textSize="50dp" />
         </LinearLayout>
@@ -49,5 +54,4 @@
             android:layout_gravity="center">
         </ImageView>
     </LinearLayout>
-
 </LinearLayout>

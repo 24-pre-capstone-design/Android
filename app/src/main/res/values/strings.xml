@@ -1,6 +1,17 @@
 <resources>
     <string name="app_name">CapstonApp</string>
     <string name="start_title">Capston</string>
+
+    <string name="start_welcome">\n한식 다이어리에 \n오신 것을 환영합니다.\n</string>
+
+    <string name="start_basic">기본모드</string>
+    <string name="start_ai">AI모드</string>
+
+    <string name="ai_explain">어서오세요! 맛있는 비밀이 피어나는 곳, 한식 다이어리입니다!\n
+    무엇을 도와드릴까요?\n\n
+    1. 메뉴를 소개해주세요.\n
+    2. 저녁 코스 2인으로 주세요.</string>
+
     <string name="main_title">한식 다이어리</string>
     <string name="main_subtitle">맛있는 비밀이 피어나는 곳</string>
 
@@ -10,12 +21,14 @@
     <string name="menu_ilpoom">일품</string>
     <string name="menu_drink">음료/주류</string>
     <string name="menu_orderlist">주문내역</string>
-    <string name="menu_aimode">AI챗봇</string>
+    <string name="main_aimode">AI 챗봇</string>
 
     <string name="bag_title">장바구니</string>
+    <string name="bag_subtitle">메뉴를 선택하세요</string>
     <string name="bag_total_count">%d가지 %d개</string>
     <string name="bag_total">합계</string>
-    <string name="bag_order">주문</string>
+    <string name="bag_order_list">주문내역</string>
+    <string name="bag_order">주문하기</string>
     <string name="bag_delete">삭제</string>
 
     <string name="bag_price">%d원</string>
@@ -28,5 +41,10 @@
 
     <string name="order_title">주문내역</string>
     <string name="order_total">합계</string>
+    <string name="order_back">닫기</string>
+    <string name="order_pay">결제하기</string>
+
+    <string name="popup_pay_title">결제 하시겠습니까?</string>
+    <string name="popup_pay">결제하기</string>
 
 </resources>

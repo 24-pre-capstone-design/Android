@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.capston2024.capstonapp.R
+import com.capston2024.capstonapp.data.FragmentType
 import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.FragmentDrinkBinding
 import com.capston2024.capstonapp.extension.UiState
@@ -78,7 +79,7 @@ class DrinkFragment:Fragment() {
                 bagFragment.arguments=bundle
 
                 if (!activity.bagIsShow)
-                    activity.settingFragments(R.id.fcv_bag, bagFragment, "bagFragment")
+                    activity.showFragments(R.id.fcv_bag, bagFragment, "bagFragment", FragmentType.AI_MODE)
                 else {
                     bagFragment.setBag()
                 }
