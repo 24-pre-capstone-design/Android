@@ -99,7 +99,8 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
                 "사용자는 어떤 음식이 있는지, 이 음식의 가격은 무엇인지 물어볼 수 있습니다." +
                 "이때 전체 음식에 대한 정보를 묻는 질문엔 바로 함수를 호출하여 전체 리스트에 대한 정보를 반환합니다." +
                 "만약 음식 가격을 물어본다면 foodName에 요청한 음식 이름을 넣고 가격을 반환합니다." +
-                "그 밖에도 반환된 리스트를 통해 얻은 정보로 상대방에게 어떤 정보를 가지고 있는지 알립니다."
+                "그 밖에도 반환된 리스트를 통해 얻은 정보로 상대방에게 어떤 정보를 가지고 있는지 알립니다." +
+                "정보는 음식 종류, 음식 이름, 음식 가격, "
 
     }
 
@@ -117,14 +118,27 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
     }
 
 
+
      fun foodMenuFunction(): String {
         val foodList = aiViewModel.getFoodList()
-        val foodListString = foodList.toString()
-
-        return foodListString
+        val foodListString = foodList?.joinToString(separator = "\n") { food ->
+            "Category: ${food.foodCategory.name}, Name: ${food.name}, Price: ${food.price}"
+        }
+        return foodListString.toString()
     }
     /***
      * functioncall용 전처리
      * gpt 함수호출을 위한 파트 끝부분입니다.
      * ***/
 }
+data class Menu(val id: Int, val name: String)
+
+data class Food(
+    val id: Int,
+    val foodCategory: Menu,
+    val name: String,
+    val price: Int,
+    val pictureURL: String,
+    val status: String,
+    val createdAt: String
+)
