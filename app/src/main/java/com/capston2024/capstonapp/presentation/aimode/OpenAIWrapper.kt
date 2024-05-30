@@ -79,6 +79,11 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     description = cartManager.FMFdescription()
                     parameters = cartManager.FMFparams()
                 }
+                function {
+                    name = cartManager.FDFname()
+                    description = cartManager.FDFdescription()
+                    parameters = cartManager.FDFparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -114,9 +119,15 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     functionResponse = cartManager.foodOrderFunction(item, quantity)
                 }
                 cartManager.FMFname()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     Log.i("LLM-WK", "Argument nothing")
                     functionResponse = cartManager.foodMenuFunction()
+                }
+                cartManager.FDFname()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
+                    val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    Log.i("LLM-WK", "Argument $foodName $quantity")
+                    functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
                 }
 
                 else -> {
