@@ -59,4 +59,8 @@ class AIViewModel @Inject constructor(
         val foodList = foodsList.value
         return foodList?.firstOrNull { it.name.equals(foodName, ignoreCase = true) }
     }
+    fun getFoodList():  List<ResponseFoodDto.Food>? {
+        val foodList = foodsList.value
+        return foodList
+    }
 }

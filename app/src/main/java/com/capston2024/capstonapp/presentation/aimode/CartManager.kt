@@ -80,7 +80,6 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
             Log.e("error", "Food item not found: $item")
         }
     }
-
     suspend fun foodOrderFunction(item: String, quantity: String): String {
         if (item != null) {
             addFoodToBag(item, quantity.toInt())
@@ -88,12 +87,42 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         } else {
             return "음식을 장바구니에 추가할 수 없습니다."
         }
+    }
+//---------------
+    fun FMFname(): String {
+        return "FoodMenuFunction"
+    }
 
+    fun FMFdescription(): String {
+        return "한식다이어리의 음식에 대한 정보를 반환합니다. " +
+                "만약 이미 한번 호출된 적이 있고 한식다이어리의 음식에 대한 정보를 이미 알고 있다면 더 이상 호출할 필요는 없습니다." +
+                "사용자는 어떤 음식이 있는지, 이 음식의 가격은 무엇인지 물어볼 수 있습니다." +
+                "이때 전체 음식에 대한 정보를 묻는 질문엔 바로 함수를 호출하여 전체 리스트에 대한 정보를 반환합니다." +
+                "만약 음식 가격을 물어본다면 foodName에 요청한 음식 이름을 넣고 가격을 반환합니다." +
+                "그 밖에도 반환된 리스트를 통해 얻은 정보로 상대방에게 어떤 정보를 가지고 있는지 알립니다."
 
-        //여기 부분은 어느 정도 자율
+    }
+
+    fun FMFparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+
+            }
+            putJsonArray("required") {
+
+            }
+        }
+        return params
     }
 
 
+     fun foodMenuFunction(): String {
+        val foodList = aiViewModel.getFoodList()
+        val foodListString = foodList.toString()
+
+        return foodListString
+    }
     /***
      * functioncall용 전처리
      * gpt 함수호출을 위한 파트 끝부분입니다.

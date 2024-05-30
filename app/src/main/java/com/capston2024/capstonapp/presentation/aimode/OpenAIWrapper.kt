@@ -33,7 +33,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
     private val dbHelper = HistoryDbHelper(context)
-    val foodmenuf =  FoodMenuFunctions()
     val cartManager = CartManager(aiViewModel, mainActivity,mainViewModel)
 
     init {
@@ -70,18 +69,16 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
 
             // hardcoding weather function every time (for now)
             functions {
-                function{
-                    name = foodmenuf.name()
-                    description = foodmenuf.description()
-                    parameters = foodmenuf.params()
-                }
-
                 function {
                     name = cartManager.name()
                     description = cartManager.description()
                     parameters = cartManager.params()
                 }
-
+                function {
+                    name = cartManager.FMFname()
+                    description = cartManager.FMFdescription()
+                    parameters = cartManager.FMFparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -109,19 +106,17 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
             var functionResponse = ""
             var handled = true
             when (function.name) {
-                foodmenuf.name()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
-                    val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
-
-                    Log.i("LLM-WK", "Argument $foodName")
-                    functionResponse = foodmenuf.getFoodDetails(foodName)
-                }
                 cartManager.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
                     val quantity = decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
                     Log.i("LLM-WK", "Argument $item $quantity")
                     functionResponse = cartManager.foodOrderFunction(item, quantity)
+                }
+                cartManager.FMFname()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    Log.i("LLM-WK", "Argument nothing")
+                    functionResponse = cartManager.foodMenuFunction()
                 }
 
                 else -> {
