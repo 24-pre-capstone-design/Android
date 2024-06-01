@@ -150,7 +150,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         return foodListString.toString()
     }
     //----------------------------------------------------------------------------------------
-    fun FDFname(): String {
+   /* fun FDFname(): String {
         return "foodDeleteFunction"
     }
 
@@ -161,9 +161,9 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
                 "만약 음식 이름만 언급했다면 quantity는 1로 간주합니다. " +
                 "예를 들어 '김치찌개 취소할게' 라고 입력받으면 장바구니에서 김치찌개를 삭제합니다."
 
-    }
+    }*/
 
-    fun FDFparams(): Parameters {
+  /*  fun FDFparams(): Parameters {
         val params = Parameters.buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
@@ -181,14 +181,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
             }
         }
         return params
-    }
-
-
-
-    fun foodDeleteFunction(foodName:String, quantity: String = "1"): String {
-        //음식 장바구니에서 제거하는 함수 입니다.
-        return ""
-    }
+    }*/
     //==============================================================================
     fun OFname(): String {
         return "orderFunction"
