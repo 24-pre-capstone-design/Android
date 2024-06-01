@@ -166,6 +166,36 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         //음식 장바구니에서 제거하는 함수 입니다.
         return ""
     }
+    //==============================================================================
+    fun OFname(): String {
+        return "orderFunction"
+    }
+
+    fun OFdescription(): String {
+        return "먼저 주문받은 것들은 장바구니에 들어있습니다." +
+                "이 함수는 장바구니에 저장된 음식을 최종 주문하여 주문내역에 추가하는 함수 입니다."
+
+    }
+
+    fun OFparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+
+            }
+            putJsonArray("required") {
+
+            }
+        }
+        return params
+    }
+
+
+
+    fun orderFunction(): String {
+        //주문내역에 추가하는 함수 입니다.
+        return ""
+    }
     /***
      * functioncall용 전처리
      * gpt 함수호출을 위한 파트 끝부분입니다.
