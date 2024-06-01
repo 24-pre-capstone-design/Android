@@ -18,8 +18,8 @@ import java.util.Locale
 
 class BagFragment : Fragment(), BagListUpdateListener {
     private var _binding: FragmentBagBinding? = null
-    private val binding:FragmentBagBinding
-        get() = requireNotNull(_binding){ "바인딩 객체 생성 안됨" }
+    private val binding: FragmentBagBinding
+        get() = requireNotNull(_binding) { "바인딩 객체 생성 안됨" }
     private lateinit var bagAdapter: BagAdapter
     private lateinit var mainViewModel: MainViewModel
 
@@ -28,7 +28,7 @@ class BagFragment : Fragment(), BagListUpdateListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding=FragmentBagBinding.inflate(inflater,container,false)
+        _binding = FragmentBagBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -39,17 +39,20 @@ class BagFragment : Fragment(), BagListUpdateListener {
         clickButtons()
     }
 
-    private fun setViewModelAndAdapter(){
-        mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        bagAdapter= BagAdapter(requireContext(), this)
-        binding.rvBag.adapter=bagAdapter
+    private fun setViewModelAndAdapter() {
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        bagAdapter = BagAdapter(requireContext(), this)
+        binding.rvBag.adapter = bagAdapter
         mainViewModel.setBagShow(true)
     }
 
-    fun setBag(){
-        val foodItem = arguments?.getSerializable("selectedFood") as Bag
+    fun setBag() {
+        var foodItem = arguments?.getSerializable("selectedFood") as Bag
+        Log.d("bagfragment", "bagfragment:fooditem-${foodItem.count}")
         bagAdapter.addBagList(foodItem)
-        binding.rvBag.scrollToPosition(bagAdapter.getBagList().size-1)
+
+
+        binding.rvBag.scrollToPosition(bagAdapter.getBagList().size - 1)
 
         setCount()
 
@@ -58,25 +61,26 @@ class BagFragment : Fragment(), BagListUpdateListener {
         })
     }
 
-    fun setCount(){
-        var numberOfFoods=bagAdapter.itemCount
-        var count=bagAdapter.getTotalCount()
-        val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
-        binding.tvCount.text=getString(R.string.bag_total_count,numberOfFoods,count)
-        binding.tvTotalPrice.text=getString(R.string.bag_price,formatter.format(bagAdapter.getTotalPrice()))
+    fun setCount() {
+        var numberOfFoods = bagAdapter.itemCount
+        var count = bagAdapter.getTotalCount()
+        val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+        binding.tvCount.text = getString(R.string.bag_total_count, numberOfFoods, count)
+        binding.tvTotalPrice.text =
+            getString(R.string.bag_price, formatter.format(bagAdapter.getTotalPrice()))
     }
 
-    private fun clickButtons(){
+    private fun clickButtons() {
         binding.btnOrder.setOnClickListener {
-            val dialog= OrderCheckDialog(bagAdapter, mainViewModel)
-            dialog.isCancelable=false
+            val dialog = OrderCheckDialog(bagAdapter, mainViewModel)
+            dialog.isCancelable = false
             activity?.let { dialog.show(it.supportFragmentManager, "ConfirmDialog") }
         }
     }
 
-    fun deleteBagFragment(){
-        val fragmentManager=requireActivity().supportFragmentManager
-        val bagFragment=fragmentManager.findFragmentById(R.id.fcv_bag)
+    fun deleteBagFragment() {
+        val fragmentManager = requireActivity().supportFragmentManager
+        val bagFragment = fragmentManager.findFragmentById(R.id.fcv_bag)
         bagFragment?.let {
             mainViewModel.setBagShow(false)
 
@@ -94,6 +98,6 @@ class BagFragment : Fragment(), BagListUpdateListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
+        _binding = null
     }
 }

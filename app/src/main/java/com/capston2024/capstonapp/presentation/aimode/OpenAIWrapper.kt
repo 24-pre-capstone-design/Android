@@ -28,12 +28,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(
-    val context: Context?,
-    private val aiViewModel: AIViewModel,
-    private val mainActivity: MainActivity,
-    private val mainViewModel: MainViewModel
-) {
+class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val mainActivity: MainActivity, val mainViewModel: MainViewModel) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
@@ -84,6 +79,11 @@ class OpenAIWrapper(
                     description = cartManager.FMFdescription()
                     parameters = cartManager.FMFparams()
                 }
+                function {
+                    name = cartManager.FDFname()
+                    description = cartManager.FDFdescription()
+                    parameters = cartManager.FDFparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -119,9 +119,20 @@ class OpenAIWrapper(
                     functionResponse = cartManager.foodOrderFunction(item, quantity)
                 }
                 cartManager.FMFname()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     Log.i("LLM-WK", "Argument nothing")
                     functionResponse = cartManager.foodMenuFunction()
+                }
+                cartManager.FDFname()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
+                    val quantity:String = if(functionArgs.containsKey("quantity")){
+                        decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    }else{
+                        "1"
+                    }
+
+                    Log.i("LLM-WK", "Argument $foodName $quantity")
+                    functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
                 }
 
                 else -> {

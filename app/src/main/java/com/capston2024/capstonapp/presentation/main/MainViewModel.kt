@@ -129,7 +129,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun addToBagList(items: Bag) {
+        Log.d("mainviewmodel", "mainviewmodel: fooditem-${items.count}")
         val currentList = _bagList.value ?: mutableListOf()
+        for(i in 0 until  currentList.size){
+            if(items.name.equals(currentList[i].name)){
+                currentList[i].count+=items.count
+                _bagList.postValue(currentList)
+                return
+            }
+        }
         currentList.add(items)
         _bagList.value = currentList
     }
@@ -138,15 +146,26 @@ class MainViewModel @Inject constructor(
     //입력받은 개수가 baglist에서의 음식 개수보다 작으면 baglist에서 음식 개수를 줄이고
     //아니면 baglist에서 해당 음식을 삭제
     fun deleteFromBagList(items:Bag, quantity:Int){
-        if(_bagList.value!=null){
-            for(i in 0 until _bagList.value!!.size){
-                if(items== _bagList.value!![i]){
-                    if(_bagList.value!![i].count>quantity){
-                        _bagList.value!![i].count-=quantity
-                    }else{
-                        _bagList.value!!.removeAt(i)
-                    }
+        _bagList.value?.let { currentList ->
+            val updatedList = mutableListOf<Bag>().apply {
+                addAll(currentList)
+            }
+            val itemIndex = updatedList.indexOfFirst { it.name == items.name }
+
+            if (itemIndex != -1) {
+                val currentItem = updatedList[itemIndex]
+
+                Log.d("mainviewmodel", "items: ${items.name}, bag: $currentItem")
+                if (currentItem.count > quantity) {
+                    currentItem.count -= quantity
+                    Log.d("mainviewmodel", "minus ${currentItem.count}")
+                } else {
+                    updatedList.removeAt(itemIndex)
+                    Log.d("mainviewmodel", "bag remove! ${updatedList.size}")
                 }
+
+                // LiveData에 변경된 리스트를 새로 할당하여 업데이트를 감지하게 함
+                _bagList.postValue(updatedList)
             }
         }
     }

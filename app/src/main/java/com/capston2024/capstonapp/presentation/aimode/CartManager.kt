@@ -57,16 +57,18 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
             mainActivity.lifecycleScope.launch {
                 if (!mainViewModel.isBagShow.value!!) {
                     val bag = Bag(foodItem.id, foodItem.name, foodItem.price, quantity)
-                    //mainViewModel.addToBagList(bag)
+                    mainViewModel.addToBagList(bag)
                     val bundle = Bundle().apply {
                         putSerializable("selectedFood", bag as Serializable)
                     }
                     mainActivity.bagFragment.arguments = bundle
-                    mainActivity.showFragments(
+                    //mainViewModel.setBagShow(true)
+                    mainActivity.setBagFragment(FragmentMode.AI_MODE)
+                    /*mainActivity.showFragments(
                         R.id.fcv_bag,
                         mainActivity.bagFragment,
                         FragmentMode.AI_MODE
-                    )
+                    )*/
                 } else {
                     mainActivity.bagFragment.setBag()
                 }
@@ -127,8 +129,70 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
 
         return foodListString
     }
+    //----------------------------------------------------------------------------------------
+    fun FDFname(): String {
+        return "foodDeleteFunction"
+    }
+
+    fun FDFdescription(): String {
+        return "음식을 주문취소하는 함수 입니다." +
+                "음식 이름과 개수를 입력 받아 장바구니에서 삭제합니다. " +
+                "만약 장바구니에 해당 음식이 없거나 해당 수량만큼 존재하지 않으면 장바구니에 이미 없는 내용이라고 반환" +
+                "만약 음식 이름만 언급했다면 quantity는 1로 간주합니다. " +
+                "예를 들어 '김치찌개 취소할게' 라고 입력받으면 장바구니에서 김치찌개를 삭제합니다."
+
+    }
+
+    fun FDFparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("foodName") {
+                    put("type", "string")
+                    put("description", "주문 취소할 음식 이름 입니다. ")
+                }
+                putJsonObject("quantity") {
+                    put("type", "string")
+                    put("description", "주문 취소할 양 입니다. 기본값은 1입니다.")
+                }
+            }
+            putJsonArray("required") {
+                add("foodName")
+            }
+        }
+        return params
+    }
+
+
+
+    fun foodDeleteFunction(foodName:String, quantity: String = "1"): String {
+        //음식 장바구니에서 제거하는 함수 입니다.
+        val foodItem = aiViewModel.getFoodByName(foodName)// 음식 이름으로 음식 객체를 가져오는 함수
+        if(foodItem!=null){
+            mainViewModel.deleteFromBagList(Bag(foodItem.id, foodItem.name,foodItem.price,quantity.toInt()), quantity.toInt())
+            Log.d("cartmanager","fooditem is not null")
+        }else{
+            Log.e("error", "Food item not found: $foodName")
+        }
+        return ""
+    }
+    /***
+     * functioncall용 전처리
+     * gpt 함수호출을 위한 파트 끝부분입니다.
+     * ***/
     /***
      * functioncall용 전처리
      * gpt 함수호출을 위한 파트 끝부분입니다.
      * ***/
 }
+data class Menu(val id: Int, val name: String)
+
+data class Food(
+    val id: Int,
+    val foodCategory: Menu,
+    val name: String,
+    val price: Int,
+    val pictureURL: String,
+    val status: String,
+    val createdAt: String
+)

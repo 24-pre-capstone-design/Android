@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_ai"/>-->
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/tv_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,14 +40,15 @@
         app:layout_constraintEnd_toStartOf="@id/btn_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_ai"/>
+        app:layout_constraintTop_toBottomOf="@id/rv_ai"/>-->
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_input"
         android:layout_width="180dp"
         android:layout_height="70dp"
         android:text="입력"
         android:textSize="20sp"
+        android:background="@drawable/ic_rectangle_ai_button_pink"
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"

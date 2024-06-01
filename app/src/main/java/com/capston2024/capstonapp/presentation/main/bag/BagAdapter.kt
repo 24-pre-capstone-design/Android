@@ -46,7 +46,8 @@ class BagAdapter(
             val position = adapterPosition
             Log.d("position", "position: ${position}")
             val count = bagList[position].count // 해당 위치의 수량 가져오기.
-            binding.tvCount.text = context.getString(R.string.bag_count, count)
+            binding.tvCount.text = context.getString(R.string.bag_count, bagData.count)
+            Log.d("bagadapter","count: ${count}")
         }
 
         private fun clickPlusButton(position: Int) {
@@ -105,13 +106,6 @@ class BagAdapter(
             val fragment=activity.supportFragmentManager.findFragmentById(R.id.fcv_bag) as BagFragment
             fragment.setCount()
         }
-
-        private fun deleteBagFragment(){
-            val activity = context as? AppCompatActivity
-            val bagFragment=activity?.supportFragmentManager?.findFragmentById(R.id.fcv_bag) as? BagFragment
-            bagFragment?.deleteBagFragment()
-        }
-
         /*fun deleteItem() {
             // bagList가 비어있으면 해당 Fragment를 제거한다.
             val fragmentManager = (context as AppCompatActivity).supportFragmentManager
@@ -159,15 +153,23 @@ class BagAdapter(
             bagList[existingIndex].count=(bagList[existingIndex].count)+1
         } else {
             // 새로운 아이템이라면 리스트에 추가
-            countList.add(1)
-            bagList.add(Bag(bag.id, bag.name,bag.price,1))
+            countList.add(bag.count)
+            bagList.add(Bag(bag.id, bag.name,bag.price,bag.count))
         }
         bagListUpdateListener.onBagListUpdated(bagList)
         notifyDataSetChanged()
     }
 
+    private fun deleteBagFragment(){
+        val activity = context as? AppCompatActivity
+        val bagFragment=activity?.supportFragmentManager?.findFragmentById(R.id.fcv_bag) as? BagFragment
+        bagFragment?.deleteBagFragment()
+    }
+
     fun updateList(newList:MutableList<Bag>){
         bagList=newList
+        if(bagList.isEmpty())
+            deleteBagFragment()
         notifyDataSetChanged()
     }
 

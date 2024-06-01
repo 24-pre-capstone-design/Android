@@ -4,11 +4,18 @@
 
     <string name="start_basic">기본모드</string>
     <string name="start_ai">AI모드</string>
-
     <string name="ai_explain">어서오세요! 맛있는 비밀이 피어나는 곳, 한식 다이어리입니다!\n
+    저는 음성으로 직접 주문이 가능한 챗 키오스크입니다\n\n
+    화면의 아무 곳이나 터치하면 주문화면으로 넘어갑니다\n</string>
+
+    <string name="ai_mode_explain">지금 화면은 대화로 주문이 가능한 ai모드 화면입니다.\n
+    태블릿의 오른쪽 끝부분에 점자가 있습니다. 점자의 바로 왼쪽 화면을 터치하면 음성 입력이 가능합니다\n
+    음성을 통해 주문을 해주세요!</string>
+
+   <!-- <string name="ai_explain">어서오세요! 맛있는 비밀이 피어나는 곳, 한식 다이어리입니다!\n
     무엇을 도와드릴까요?\n\n
     1. 메뉴를 소개해주세요.\n
-    2. 저녁 코스 2인으로 주세요.</string>
+    2. 저녁 코스 2인으로 주세요.</string>-->
 
     <string name="main_title">한식 다이어리</string>
     <string name="main_subtitle">맛있는 비밀이 피어나는 곳</string>

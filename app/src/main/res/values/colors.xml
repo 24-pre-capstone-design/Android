@@ -8,6 +8,7 @@
 
     <color name="ai_background_pink">#FFF3F3</color>
     <color name="ai_background_input_pink">#F1D7D7</color>
+    <color name="ai_input_button_pink">#F2A0A0</color>
 
     <color name="menu_background_beige">#F0EADA</color>
     <color name="menu_clicked_beige">#E3D8BA</color>
@@ -26,6 +27,7 @@
     <color name="popup_order_orange">#FF9820</color>
     <color name="popup_background_grey">#A6333333</color>
 
+    <color name="order_top_background_pink">#F2A0A0</color>
     <color name="order_background_pink">#FFF3F3</color>
     <color name="order_item_background_pink">#FAEFEF</color>
     <color name="order_item_under_bar_gray">#F0E6E6</color>
