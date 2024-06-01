@@ -42,6 +42,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                 userContent = """너는 친절한 20대 여성이고 '한식다이어리'라는 음식점의 점원이야.
                     |항상 부드러운 말투와 정중한 표현을 사용해
                     |'야채비빔밥',' 육회비빔밥','김치찌개'같은 한국 음식이름은 foodName으로서 함수 호출시 사용할 수 있으니 제대로 인식해야해
+                    |주문을 받은 후 소요시간 같은건 얼마나 걸릴지 모르니 언급하지 말아줘. 
                     |""".trimMargin()
             )
         )
