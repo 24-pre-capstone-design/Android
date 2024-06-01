@@ -15,6 +15,8 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import java.io.Serializable
+import kotlin.collections.mutableMapOf
+import kotlin.math.log
 
 class CartManager(private val aiViewModel: AIViewModel, private val mainActivity: MainActivity, private val mainViewModel: MainViewModel) {
 
@@ -26,7 +28,9 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
     }
 
     fun description(): String {
-        return "사용자의 주문을 받아 장바구니에 추가하는 함수입니다. "
+        return "사용자의 주문을 받아 장바구니에 추가하는 함수입니다. " +
+                "여러개의 음식을 주문 받을 때는 음식에 관한 이름을 ,로 연결시켜서 입력받습니다." +
+                "예를들어 '야채비빔밥'과 '김치찌개' 1인분씩 줘 라고 하면 item엔 '야채비빔밥,김치찌개' 을 넣습니다."
     }
 
     fun params(): Parameters {
@@ -35,11 +39,14 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
             putJsonObject("properties") {
                 putJsonObject("item") {
                     put("type", "string")
-                    put("description", "현재 주문할 음식의 이름 입니다.")
+                    put("description", "현재 주문할 음식들의 이름 입니다." +
+                            "복수개의 음식을 주문받을 때는 ','로 구분하여 입력받습니다." +
+                            "예를 들어 야채비빔밥과 김치찌개, 소불고기를 입력받으면 '야채비빔밥,김치찌개,소불고기' 이런식으로 입력받게 됩니다.")
                 }
                 putJsonObject("quantity") {
                     put("type", "string")
-                    put("description", "추가할 아이템의 양 입니다.")
+                    put("description", "추가할 아이템의 양 입니다." +
+                            "예를 들어 김치찌개 하나, 소불고기 두개를 주문 받으면 '1,2' 이런식으로 저장합니다.")
                 }
             }
             putJsonArray("required") {
@@ -87,8 +94,18 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         }
     }
     suspend fun foodOrderFunction(item: String, quantity: String): String {
+        val foodList = item.split(",")
+        val quantityList : ArrayDeque<String> = ArrayDeque(quantity.split(","))
+        var tmp=0
+       // Log.d("foodOrderF","$item $quantity ")
         if (item != null) {
-            addFoodToBag(item, quantity.toInt())
+            for(food in foodList){
+              //  Log.d("foodOrderF","$food")
+                tmp= quantityList.removeFirst().toInt()
+                repeat(tmp){
+                    addFoodToBag(food, 1)
+                }
+            }
             return "${item}을/를 ${quantity}만큼 장바구니에 넣었습니다!"
         } else {
             return "음식을 장바구니에 추가할 수 없습니다."
