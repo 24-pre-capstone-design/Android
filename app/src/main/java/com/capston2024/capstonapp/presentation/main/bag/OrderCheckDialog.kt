@@ -71,7 +71,7 @@ class OrderCheckDialog(
             bagViewModel.orderState.collect { orderState ->
                 when (orderState) {
                     is OrderState.Success -> {
-                        Log.d("orderckeckdialog","orderstate SUccess!!")
+                        Log.d("orderckeckdialog","orderstate Success!!")
                         removeBagShowOrder()
                     }
 
@@ -90,9 +90,9 @@ class OrderCheckDialog(
     // Order 버튼 클릭 시 처리
     private fun processOrder() {
         mainViewModel.setOrderCheckDialogCallback(this)
-        mainViewModel.setPaymentId()
+        mainViewModel.setPaymentId("process")
 
-        handleOrderDetails(mainViewModel.getPaymentId()!!)
+        //handleOrderDetails(mainViewModel.getPaymentId()!!)
 
 
         //mainViewModel.processOrder()

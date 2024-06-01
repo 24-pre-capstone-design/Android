@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.ItemBagBinding
+import com.capston2024.capstonapp.presentation.main.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
 class BagAdapter(
     private val context: Context,
-    //private val viewModel: MainViewModel
+    private val bagListUpdateListener: BagListUpdateListener
 ) : RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
     private val inflater by lazy { LayoutInflater.from(context) }
     private var countList: MutableList<Int> = mutableListOf()
@@ -45,7 +46,8 @@ class BagAdapter(
             val position = adapterPosition
             Log.d("position", "position: ${position}")
             val count = bagList[position].count // 해당 위치의 수량 가져오기.
-            binding.tvCount.text = context.getString(R.string.bag_count, count)
+            binding.tvCount.text = context.getString(R.string.bag_count, bagData.count)
+            Log.d("bagadapter","count: ${count}")
         }
 
         private fun clickPlusButton(position: Int) {
@@ -55,6 +57,7 @@ class BagAdapter(
             val countMessage = context.getString(R.string.bag_count, currentCount + 1)
             binding.tvCount.text = countMessage
             setCount()
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -69,6 +72,7 @@ class BagAdapter(
                 }
                 if (bagList.size == 0)
                     deleteBagFragment()
+                bagListUpdateListener.onBagListUpdated(bagList)
                 notifyDataSetChanged()
                 return
             }else{
@@ -79,6 +83,7 @@ class BagAdapter(
                 Log.d("currentCount", "bagadapter Current count: ${countList[position]}")
             }
             setCount()
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -92,6 +97,7 @@ class BagAdapter(
             else{
                 setCount()
             }
+            bagListUpdateListener.onBagListUpdated(bagList)
             notifyDataSetChanged()
         }
 
@@ -100,13 +106,6 @@ class BagAdapter(
             val fragment=activity.supportFragmentManager.findFragmentById(R.id.fcv_bag) as BagFragment
             fragment.setCount()
         }
-
-        private fun deleteBagFragment(){
-            val activity = context as? AppCompatActivity
-            val bagFragment=activity?.supportFragmentManager?.findFragmentById(R.id.fcv_bag) as? BagFragment
-            bagFragment?.deleteBagFragment()
-        }
-
         /*fun deleteItem() {
             // bagList가 비어있으면 해당 Fragment를 제거한다.
             val fragmentManager = (context as AppCompatActivity).supportFragmentManager
@@ -154,9 +153,23 @@ class BagAdapter(
             bagList[existingIndex].count=(bagList[existingIndex].count)+1
         } else {
             // 새로운 아이템이라면 리스트에 추가
-            countList.add(1)
-            bagList.add(Bag(bag.id, bag.name,bag.price,1))
+            countList.add(bag.count)
+            bagList.add(Bag(bag.id, bag.name,bag.price,bag.count))
         }
+        bagListUpdateListener.onBagListUpdated(bagList)
+        notifyDataSetChanged()
+    }
+
+    private fun deleteBagFragment(){
+        val activity = context as? AppCompatActivity
+        val bagFragment=activity?.supportFragmentManager?.findFragmentById(R.id.fcv_bag) as? BagFragment
+        bagFragment?.deleteBagFragment()
+    }
+
+    fun updateList(newList:MutableList<Bag>){
+        bagList=newList
+        if(bagList.isEmpty())
+            deleteBagFragment()
         notifyDataSetChanged()
     }
 

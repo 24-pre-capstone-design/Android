@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aallam.openai.api.chat.ChatRole
 import com.capston2024.capstonapp.R
+import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.data.Message
 import com.capston2024.capstonapp.data.MessageType
 import com.capston2024.capstonapp.databinding.FragmentAiBinding
@@ -44,16 +47,18 @@ import java.util.Locale
 class AIFragment : Fragment() {
     private var _binding: FragmentAiBinding? = null
     private val binding get() = _binding!!
-    private val aiViewModel: AIViewModel by viewModels()
+    private lateinit var aiViewModel: AIViewModel
 
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var messageList: MutableList<CustomChatMessage>
-    private lateinit var openAIWrapper: OpenAIWrapper
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var openAIWrapper: OpenAIWrapper
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private var textToSpeech: TextToSpeech? = null
     var isTTSReady = false // TTS 준비 상태 플래그
+    private var handler: Handler? = null
+    private var runnable: Runnable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +72,7 @@ class AIFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setting()
+        Log.d("aifragment", "new aiframgent!!")
 
         //권한 설정
         requestPermission()
@@ -84,6 +90,7 @@ class AIFragment : Fragment() {
         messageList = mutableListOf()
         chatAdapter = ChatAdapter(messageList)
         mainViewModel= ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        aiViewModel = ViewModelProvider(requireActivity()).get(AIViewModel::class.java)
         openAIWrapper = OpenAIWrapper(requireContext(), aiViewModel, requireActivity() as MainActivity, mainViewModel)
 
         with(binding) {
@@ -114,6 +121,13 @@ class AIFragment : Fragment() {
                 }
             }
         }
+
+            mainViewModel.mode.observe(viewLifecycleOwner){mode ->
+                when(mode) {
+                    FragmentMode.AI_MODE -> startRepeatingTask() // AIMode일 때 TTS 시작
+                    FragmentMode.BASIC_MODE -> stopRepeatingTask() // BasicMode일 때 TTS 중단
+                }
+            }
     }
 
     private fun clickButton() {
@@ -146,7 +160,7 @@ class AIFragment : Fragment() {
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = openAIWrapper.chat(message)
+            val response = openAIWrapper.chat(message) ?: "Error: Wrapper is null"
             withContext(Dispatchers.Main) {
                 updateChatWithResponse(message, response)
             }
@@ -189,7 +203,7 @@ class AIFragment : Fragment() {
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(3.0f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(5.0f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {
@@ -200,18 +214,47 @@ class AIFragment : Fragment() {
         }
     }
 
+    private fun startRepeatingTask() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                speakInitialMessage()
+                handler?.postDelayed(this, 20000) // 20초 후에 다시 실행
+            }
+        }
+        runnable?.let { handler?.post(it) }
+    }
+
+    private fun stopRepeatingTask() {
+        handler?.removeCallbacks(runnable!!)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //startRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보일 때 TTS 시작
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //stopRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보이지 않을 때 TTS 중단
+    }
+
     private fun speakInitialMessage() {
-        if (isTTSReady) {
-            // 예제 메시지를 TTS로 말하기
+        if (isTTSReady && isFragmentVisible()) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
+            // 설명 메시지를 TTS로 말하기
             textToSpeech?.speak(
-                "말씀하세요!",
+                getString(R.string.ai_mode_explain),
                 TextToSpeech.QUEUE_FLUSH,
                 null,
                 ""
             )
-            Log.d("aifragment","tts is ready")
+            Log.d("aifragment", "tts is ready")
         }
     }
+    private fun isFragmentVisible(): Boolean {
+        return isVisible && !isHidden
+    }
+
 
     private fun speakResponse(text:String){
         if (isTTSReady) {
@@ -236,11 +279,11 @@ class AIFragment : Fragment() {
     private val recognitionListener: RecognitionListener = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle) {
             Toast.makeText(context, "이제 말씀하세요!", Toast.LENGTH_SHORT).show()
-            binding.tvState.text = "이제 말씀하세요!"
+            //binding.tvState.text = "이제 말씀하세요!"
         }
 
         override fun onBeginningOfSpeech() {
-            binding.tvState.text = "잘 듣고 있어요."
+            //binding.tvState.text = "잘 듣고 있어요."
         }
 
         // 입력받는 소리의 크기를 알려줌
@@ -251,7 +294,7 @@ class AIFragment : Fragment() {
 
         // 말하기를 중지하면 호출
         override fun onEndOfSpeech() {
-            binding.tvState.text = "끝!"
+            //binding.tvState.text = "끝!"
             CoroutineScope(Dispatchers.Main).launch {
                 /*delay(500)
                 addChatItem(
@@ -259,7 +302,7 @@ class AIFragment : Fragment() {
                     MessageType.AI_CHAT
                 )*/
 
-                binding.tvState.text = "상태체크"
+                //binding.tvState.text = "상태체크"
             }
         }
 
@@ -277,7 +320,7 @@ class AIFragment : Fragment() {
                 SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "말하는 시간초과"
                 else -> "알 수 없는 오류임"
             }
-            binding.tvState.text = "에러 발생: $message"
+            //binding.tvState.text = "에러 발생: $message"
         }
 
         override fun onResults(results: Bundle) {
