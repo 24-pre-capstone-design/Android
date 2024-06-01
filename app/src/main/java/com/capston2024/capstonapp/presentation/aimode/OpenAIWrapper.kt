@@ -84,6 +84,11 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     description = cartManager.FDFdescription()
                     parameters = cartManager.FDFparams()
                 }
+                function {
+                    name = cartManager.OFname()
+                    description = cartManager.OFdescription()
+                    parameters = cartManager.OFparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -134,6 +139,12 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     Log.i("LLM-WK", "Argument $foodName $quantity")
                     functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
                 }
+
+                cartManager.OFname()->{
+                    Log.i("LLM-WK", "Argument nothing")
+                    functionResponse = cartManager.orderFunction()
+                }
+
 
                 else -> {
                     Log.i("LLM", "Function ${function!!.name} does not exist")

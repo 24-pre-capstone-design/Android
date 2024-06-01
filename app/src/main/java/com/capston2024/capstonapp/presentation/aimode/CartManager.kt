@@ -105,7 +105,8 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
                 "사용자는 어떤 음식이 있는지, 이 음식의 가격은 무엇인지 물어볼 수 있습니다." +
                 "이때 전체 음식에 대한 정보를 묻는 질문엔 바로 함수를 호출하여 전체 리스트에 대한 정보를 반환합니다." +
                 "만약 음식 가격을 물어본다면 foodName에 요청한 음식 이름을 넣고 가격을 반환합니다." +
-                "그 밖에도 반환된 리스트를 통해 얻은 정보로 상대방에게 어떤 정보를 가지고 있는지 알립니다."
+                "그 밖에도 반환된 리스트를 통해 얻은 정보로 상대방에게 어떤 정보를 가지고 있는지 알립니다." +
+                "정보는 음식 종류, 음식 이름, 음식 가격, "
 
     }
 
@@ -123,11 +124,83 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
     }
 
 
+
      fun foodMenuFunction(): String {
         val foodList = aiViewModel.getFoodList()
-        val foodListString = foodList.toString()
+        val foodListString = foodList?.joinToString(separator = "\n") { food ->
+            "Category: ${food.foodCategory.name}, Name: ${food.name}, Price: ${food.price}"
+        }
+        return foodListString.toString()
+    }
+    //----------------------------------------------------------------------------------------
+    fun FDFname(): String {
+        return "foodDeleteFunction"
+    }
 
-        return foodListString
+    fun FDFdescription(): String {
+        return "음식을 주문취소하는 함수 입니다." +
+                "음식 이름과 개수를 입력 받아 장바구니에서 삭제합니다. " +
+                "만약 장바구니에 해당 음식이 없거나 해당 수량만큼 존재하지 않으면 장바구니에 이미 없는 내용이라고 반환" +
+                "만약 음식 이름만 언급했다면 quantity는 1로 간주합니다. " +
+                "예를 들어 '김치찌개 취소할게' 라고 입력받으면 장바구니에서 김치찌개를 삭제합니다."
+
+    }
+
+    fun FDFparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("foodName") {
+                    put("type", "string")
+                    put("description", "주문 취소할 음식 이름 입니다. ")
+                }
+                putJsonObject("quantity") {
+                    put("type", "string")
+                    put("description", "주문 취소할 양 입니다. 기본값은 1입니다.")
+                }
+            }
+            putJsonArray("required") {
+                add("foodName")
+            }
+        }
+        return params
+    }
+
+
+
+    fun foodDeleteFunction(foodName:String, quantity: String = "1"): String {
+        //음식 장바구니에서 제거하는 함수 입니다.
+        return ""
+    }
+    //==============================================================================
+    fun OFname(): String {
+        return "orderFunction"
+    }
+
+    fun OFdescription(): String {
+        return "먼저 주문받은 것들은 장바구니에 들어있습니다." +
+                "이 함수는 장바구니에 저장된 음식을 최종 주문하여 주문내역에 추가하는 함수 입니다."
+
+    }
+
+    fun OFparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+
+            }
+            putJsonArray("required") {
+
+            }
+        }
+        return params
+    }
+
+
+
+    fun orderFunction(): String {
+        //주문내역에 추가하는 함수 입니다.
+        return ""
     }
     //----------------------------------------------------------------------------------------
     fun FDFname(): String {
