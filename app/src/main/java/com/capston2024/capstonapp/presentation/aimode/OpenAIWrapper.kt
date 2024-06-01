@@ -136,13 +136,16 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     }else{
                         "1"
                     }
+
                     Log.i("LLM-WK", "Argument $foodName $quantity")
                     functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
                 }
+
                 cartManager.OFname()->{
                     Log.i("LLM-WK", "Argument nothing")
                     functionResponse = cartManager.orderFunction()
                 }
+
 
                 else -> {
                     Log.i("LLM", "Function ${function!!.name} does not exist")
