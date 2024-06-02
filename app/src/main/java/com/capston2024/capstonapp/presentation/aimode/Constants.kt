@@ -1,10 +1,8 @@
 package com.capston2024.capstonapp.presentation.aimode
 
 import com.capston2024.capstonapp.BuildConfig
-<<<<<<< HEAD
+
 import com.knuddels.jtokkit.api.EncodingType
-=======
->>>>>>> d57da330fedace9faa94eb07aeeba6496cf631f6
 import com.knuddels.jtokkit.api.ModelType
 
 internal object Constants {

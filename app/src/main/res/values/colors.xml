@@ -26,15 +26,15 @@
     <color name="popup_order_orange">#FF9820</color>
     <color name="popup_background_grey">#A6333333</color>
 
-<<<<<<< HEAD
+
     <color name="order_background_green">#F5F7EC</color>
     <color name="order_itembackground_brown">#EAE0C5</color>
-=======
+
     <color name="order_background_pink">#FFF3F3</color>
     <color name="order_item_background_pink">#FAEFEF</color>
     <color name="order_item_under_bar_gray">#F0E6E6</color>
     <color name="order_history_bar_gray">#B4B4B8</color>
->>>>>>> d57da330fedace9faa94eb07aeeba6496cf631f6
+
     <color name="order_back_gray">#A9A9A9</color>
     <color name="order_pay_orange">#F27405</color>
 
