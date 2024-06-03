@@ -149,7 +149,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
             "Category: ${food.foodCategory.name}, Name: ${food.name}, Price: ${food.price}"
         }
         return foodListString.toString()
-    }
+     }
     //----------------------------------------------------------------------------------------
    /* fun FDFname(): String {
         return "foodDeleteFunction"
@@ -183,7 +183,6 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         }
         return params
     }*/
-    //==============================================================================
     fun OFname(): String {
         return "orderFunction"
     }
