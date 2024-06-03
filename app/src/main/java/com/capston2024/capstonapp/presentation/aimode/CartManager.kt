@@ -59,6 +59,7 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
 
     fun addFoodToBag(item: String, quantity: Int) {
         // val aiViewModel: AIViewModel by viewModels()
+        // 장바구니에 추가하는 함수입니다.
         val foodItem = aiViewModel.getFoodByName(item)// 음식 이름으로 음식 객체를 가져오는 함수
         if (foodItem != null) {
             mainActivity.lifecycleScope.launch {
@@ -210,6 +211,8 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
 
     fun orderFunction(): String {
         //주문내역에 추가하는 함수 입니다.
+        mainViewModel.setPaymentId("cartManager")
+        mainViewModel.makeOrderHistory()
         return ""
     }
     //----------------------------------------------------------------------------------------

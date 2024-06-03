@@ -68,7 +68,7 @@ class OrderCheckDialog(
 
     private fun collectOrderState(){
         lifecycleScope.launch {
-            bagViewModel.orderState.collect { orderState ->
+            mainViewModel.orderState.collect { orderState ->
                 when (orderState) {
                     is OrderState.Success -> {
                         Log.d("orderckeckdialog","orderstate Success!!")
@@ -132,11 +132,11 @@ class OrderCheckDialog(
         //paymentid 설정됨 // paymentId 가져오기
         if (paymentId != null) {
             // 장바구니 내역 가져오기
-            bagViewModel.makeBagList(bagAdapter.getBagList())
+            //bagViewModel.makeBagList(bagAdapter.getBagList())
             Log.d("ordercheckdialog", "paymentid: $paymentId")
             bagAdapter.initializeBagList()
             // 주문내역으로 보내기
-            bagViewModel.makeOrderHistory(paymentId)
+            mainViewModel.makeOrderHistory()
         }
         Log.d("ordercheckdialog","handleorderdetail is end")
     }
@@ -144,6 +144,9 @@ class OrderCheckDialog(
     private fun removeBagShowOrder() {
         // BagFragment 제거
         //dismiss()
+
+        //장바구니 내역 초기화
+        mainViewModel.clearBagList()
         val fragmentManager = requireActivity().supportFragmentManager
         var fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
         fragment?.let {
