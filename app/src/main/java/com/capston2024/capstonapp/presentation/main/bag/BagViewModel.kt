@@ -25,7 +25,7 @@ class BagViewModel @Inject constructor(
     val orderState:StateFlow<OrderState> = _orderState
     private var bagList: List<RequestOrderDto.OrderRequestDtoList>? = null
 
-    fun makeBagList(bags:List<Bag>){
+    /*fun makeBagList(bags:List<Bag>){
         bagList = bags.map { bag ->
             RequestOrderDto.OrderRequestDtoList(
                 foodId = bag.id,
@@ -50,5 +50,5 @@ class BagViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 }

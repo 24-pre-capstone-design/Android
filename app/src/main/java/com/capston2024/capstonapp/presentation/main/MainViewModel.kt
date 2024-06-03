@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.data.FragmentMode
+import com.capston2024.capstonapp.data.requestDto.RequestOrderDto
 import com.capston2024.capstonapp.data.responseDto.ResponseMenuDto
 import com.capston2024.capstonapp.domain.repository.AuthRepository
 import com.capston2024.capstonapp.extension.MenuState
+import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
 import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
@@ -61,6 +63,11 @@ class MainViewModel @Inject constructor(
 
     private val _isBagShow = MutableLiveData<Boolean>(false)
     var isBagShow:LiveData<Boolean> = _isBagShow
+
+    //주문히스토리 만들 때 쓰이는 state
+    private val _orderState = MutableStateFlow<OrderState>(OrderState.Loading)
+    val orderState:StateFlow<OrderState> = _orderState
+
     //foodCategory 만들기
     fun getMenu() {
         viewModelScope.launch {
@@ -170,8 +177,31 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun updateBagList(updatedList:MutableList<Bag>){
-        _bagList.value=updatedList
+    fun makeOrderHistory(){
+        val list = _bagList.value?.map { bag ->
+            RequestOrderDto.OrderRequestDtoList(bag.id, bag.count)
+        } ?: listOf()
+
+        var request = RequestOrderDto(paymentId!!, list)
+        viewModelScope.launch {
+            authRepository.makeOrder(request).onSuccess {
+                _orderState.value=OrderState.Success
+                Log.d("mainviewmodel","success")
+            }.onFailure {
+                Log.e("mainviewmodel","makeorderhistory Error:${it.message}")
+                if (it is HttpException) {
+                    val data = it.response()?.errorBody()?.byteString()?.toString()
+                    val errorBody = data?.substringAfter("message")
+                    if (errorBody != null) {
+                        Log.e("mainviewmodel", "message${errorBody}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateBagList(updatedList:List<Bag>){
+        _bagList.value = updatedList.toMutableList()
     }
 
     fun clearBagList() {
