@@ -53,6 +53,7 @@ class OrderCheckDialog(
     ): View? {
         _binding = DialogOrdercheckBinding.inflate(inflater, container, false)
         val view = binding.root
+        Log.d("ordercheckdialog","orderstate: ${mainViewModel.orderState.value}")
         collectOrderState()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -68,6 +69,7 @@ class OrderCheckDialog(
 
     private fun collectOrderState(){
         lifecycleScope.launch {
+            //주문 제대로 보냈는지 확인하고 dialog랑 장바구니 화면 삭제
             mainViewModel.orderState.collect { orderState ->
                 when (orderState) {
                     is OrderState.Success -> {
@@ -144,7 +146,6 @@ class OrderCheckDialog(
     private fun removeBagShowOrder() {
         // BagFragment 제거
         //dismiss()
-
         //장바구니 내역 초기화
         mainViewModel.clearBagList()
         val fragmentManager = requireActivity().supportFragmentManager
@@ -159,8 +160,9 @@ class OrderCheckDialog(
             fragmentManager.executePendingTransactions()
 
             val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
-            Log.d("Fragment", "Fragment removed: $isFragmentRemoved")
+            Log.d("ordercheckdialog", "Fragment removed: $isFragmentRemoved")
         }
+        mainViewModel.setOrderStateLoading()
         //orderFragment 보이기
         //fragment=fragmentManager.findFragmentById(R.id.fcv_order)
         fragmentManager.beginTransaction()

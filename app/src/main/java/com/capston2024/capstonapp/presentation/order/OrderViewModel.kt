@@ -31,7 +31,9 @@ class OrderViewModel @Inject constructor(
             authRepository.getOrderHistory(paymentId).onSuccess { response ->
                 when(response.success){
                     true -> {
-                        _orderHistoryState.value=OrderHistoryState.Success(response.toOrderHistoryList())
+                        Log.d("orderviewmodel","getorderhistory success:${response.data.paymentId}")
+                        Log.d("orderviewmodel","getorderhistory success: ${response.data.orderHistoryResponseDtoList}")
+                        _orderHistoryState.value=OrderHistoryState.Success(response.data.orderHistoryResponseDtoList)
                         _orderTotalPrice.value = response.data.sumOfPaymentCost
                     }
                     false -> {

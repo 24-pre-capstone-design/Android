@@ -53,10 +53,13 @@ class OrderFragment:Fragment() {
 
         //mainViewModel.setPaymentId("order")
         lifecycleScope.launch {
+            //paymentid를 서버에 보내서 주문내역 받아옴
             mainViewModel.paymentIdState.collect{paymentIdState ->
                 when(paymentIdState){
                     is PaymentIdState.Success ->{
+                        Log.d("orderframgent","paymentid state success")
                         orderViewModel.getOrderHistory(paymentIdState.paymentId)
+                        //mainViewModel.setPaymentState()
                     }
                     is PaymentIdState.Loading -> {}
                     is PaymentIdState.Error -> {}
@@ -65,10 +68,15 @@ class OrderFragment:Fragment() {
         }
         binding.rvOrder.adapter=orderAdapter
         lifecycleScope.launch {
+            //주문내역 서버에서 받아오기 성공했는지 확인하고 화면에 보여줌
             orderViewModel.orderHistoryState.collect{orderHistoryState ->
                 when(orderHistoryState){
                     is OrderHistoryState.Success -> {
-                        orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
+                        if (isAdded) { // Fragment가 여전히 추가된 상태인지 확인
+                            Log.d("orderfragment", "orderhistorystate is success")
+                            orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
+                            mainViewModel.setPaymentStateLoading()
+                        }
                     }
                     is OrderHistoryState.Error -> {
                         Log.e("orderfragment","foodstate is error")

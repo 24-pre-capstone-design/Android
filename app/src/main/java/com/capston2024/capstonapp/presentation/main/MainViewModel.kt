@@ -92,18 +92,22 @@ class MainViewModel @Inject constructor(
         this.orderCheckDialogCallback = callback
     }
 
+    //paymentid 설정 및 주문
     fun setPaymentId(name:String) {
         Log.d("mainviewmodel","set paymentId:")
+        //주문내역 화면이고 paymenrId가 아직 없다면 그냥 return
         if(name.equals("order")&&hasPaymentIdBeenSet==null){
             Log.d("mainviewmodel","paymentId: $paymentId")
             return
         }
-        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않음
+        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않고 주문
         if (hasPaymentIdBeenSet==true) {
-            orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
-            Log.d("mainviewmodel","paymentId: $paymentId")
+            //orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
+            Log.d("mainviewmodel"," paymentid true paymentId: $paymentId")
+            makeOrderHistory()
             return
         }else{
+            ///paymenrId가 없으므로 가져오고 서버에서 성공적으로 가져왔다면 주문
             Log.d("mainviewmodel", "haspaymentidbeenset is false")
             viewModelScope.launch {
                 Log.d("mainviewmodel", "viewModelScope.launch 시작")
@@ -112,7 +116,8 @@ class MainViewModel @Inject constructor(
                     hasPaymentIdBeenSet = true
                     _paymentIdState.value = PaymentIdState.Success(response.data)
                     paymentId = response.data
-                    orderCheckDialogCallback?.handleOrderDetails(response.data)
+                    makeOrderHistory()
+                    //orderCheckDialogCallback?.handleOrderDetails(response.data)
                     Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
                 }.onFailure {
                     Log.e("mainviewmodel", "Error:${it.message}")
@@ -186,6 +191,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.makeOrder(request).onSuccess {
                 _orderState.value=OrderState.Success
+                _bagList.value!!.clear()
                 Log.d("mainviewmodel","success")
             }.onFailure {
                 Log.e("mainviewmodel","makeorderhistory Error:${it.message}")
@@ -221,6 +227,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun setBagShow(bagShow:Boolean){
-        _isBagShow.value=bagShow
+        _isBagShow.postValue(bagShow)
     }
+
+    fun setOrderStateLoading(){_orderState.value=OrderState.Loading}
+
+    fun setPaymentStateLoading(){_paymentIdState.value=PaymentIdState.Loading}
 }
