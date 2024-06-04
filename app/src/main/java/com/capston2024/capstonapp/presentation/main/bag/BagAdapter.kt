@@ -42,6 +42,7 @@ class BagAdapter(
             val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
             binding.tvFoodName.text = bagData.name
             binding.tvFoodPrice.text = context.getString(R.string.bag_price, formatter.format(bagData.price))
+            Log.d("bagadapter","clicked data: ${bagData.name}")
 
             val position = adapterPosition
             Log.d("position", "position: ${position}")
@@ -156,6 +157,7 @@ class BagAdapter(
             countList.add(bag.count)
             bagList.add(Bag(bag.id, bag.name,bag.price,bag.count))
         }
+        Log.d("bagadapter","addbaglist, listsize: ${bagList.size}")
         bagListUpdateListener.onBagListUpdated(bagList)
         notifyDataSetChanged()
     }
@@ -167,6 +169,7 @@ class BagAdapter(
     }
 
     fun updateList(newList:MutableList<Bag>){
+        Log.d("bagadapter","updatelist, listsize: ${bagList.size}")
         bagList=newList
         if(bagList.isEmpty())
             deleteBagFragment()

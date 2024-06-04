@@ -50,13 +50,12 @@ class BagFragment : Fragment(), BagListUpdateListener {
         var foodItem = arguments?.getSerializable("selectedFood") as Bag
         Log.d("bagfragment", "bagfragment:fooditem-${foodItem.count}")
         bagAdapter.addBagList(foodItem)
-
-
         binding.rvBag.scrollToPosition(bagAdapter.getBagList().size - 1)
 
         setCount()
 
         mainViewModel.bagList.observe(viewLifecycleOwner, Observer { bagList ->
+            Log.d("bagfragment","setbag baglistsize: ${bagList.size}")
             bagAdapter.updateList(bagList)
         })
     }
