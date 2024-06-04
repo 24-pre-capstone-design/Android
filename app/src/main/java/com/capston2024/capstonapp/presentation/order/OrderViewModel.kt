@@ -32,8 +32,8 @@ class OrderViewModel @Inject constructor(
                 when(response.success){
                     true -> {
                         Log.d("orderviewmodel","getorderhistory success:${response.data.paymentId}")
-                        Log.d("orderviewmodel","getorderhistory success: ${response.data.orderHistoryResponseDtoList}")
-                        _orderHistoryState.value=OrderHistoryState.Success(response.data.orderHistoryResponseDtoList)
+                        Log.d("orderviewmodel","getorderhistory success: ${response.toOrderHistoryList()}")
+                        _orderHistoryState.value=OrderHistoryState.Success(response.toOrderHistoryList())
                         _orderTotalPrice.value = response.data.sumOfPaymentCost
                     }
                     false -> {
