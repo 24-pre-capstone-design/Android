@@ -130,7 +130,7 @@ class AIFragment : Fragment() {
             }
     }
 
-    private fun clickButton() {
+   /* private fun clickButton() {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
             setRecognitionListener(recognitionListener)
             // RecognizerIntent 생성
@@ -144,19 +144,19 @@ class AIFragment : Fragment() {
             // 여기에 startListening 호출 추가
             startListening(intent)
         }
-    }
+    }*/
 
-    /*private fun clickButton() {
-        handleUserMessage(binding.etMessage.text.toString())
+    private fun clickButton() {
+        handleUserMessage(binding.etUserInput.text.toString())
         messageList.add(
             CustomChatMessage(
                 ChatRole.User,
-                userContent = binding.etMessage.text.toString()
+                userContent = binding.etUserInput.text.toString()
             )
         )
         chatAdapter.notifyDataSetChanged()
-        binding.etMessage.setText("") //초기화
-    }*/
+        binding.etUserInput.setText("") //초기화
+    }
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {

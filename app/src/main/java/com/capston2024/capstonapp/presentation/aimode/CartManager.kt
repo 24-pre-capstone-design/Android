@@ -3,13 +3,18 @@ package com.capston2024.capstonapp.presentation.aimode
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.core.Parameters
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.data.FragmentMode
+import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
@@ -214,9 +219,51 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
 
     fun orderFunction(): String {
         //주문내역에 추가하는 함수 입니다.
-        mainViewModel.setPaymentId("cartManager")
-        mainViewModel.makeOrderHistory()
+        mainViewModel.viewModelScope.launch {
+            mainViewModel.setPaymentId("cartManager")
+            mainViewModel.orderState.collect{orderState ->
+                when(orderState){
+                    is OrderState.Success -> {
+                        Log.d("CartManager", "orderstate Success!!")
+                        withContext(Dispatchers.Main) {
+                            removeBag()
+                        }
+                    }
+
+                    is OrderState.Error -> {
+                        // 오류 처리
+                    }
+
+                    is OrderState.Loading -> {
+                        // 로딩 처리
+                    }
+                }
+            }
+        }
+        //mainViewModel.makeOrderHistory()
         return ""
+    }
+    private fun removeBag(){
+        //메인스레드에서 실행하도록 함 llegalStateException 막음.
+        GlobalScope.launch(Dispatchers.Main) {
+            mainViewModel.clearBagList()
+
+            val fragmentManager = mainActivity.supportFragmentManager
+            val fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
+            fragment?.let {
+                mainViewModel.setBagShow(false)
+
+                val transaction = fragmentManager.beginTransaction()
+                transaction.remove(it)
+                transaction.commit()
+
+                fragmentManager.executePendingTransactions()
+
+                val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
+                Log.d("Fragment", "Fragment removed: $isFragmentRemoved")
+            }
+            mainViewModel.setOrderStateLoading()
+        }
     }
     //----------------------------------------------------------------------------------------
     fun FDFname(): String {

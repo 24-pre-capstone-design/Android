@@ -14,7 +14,7 @@ import com.capston2024.capstonapp.extension.MenuState
 import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
-import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
+//import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +52,7 @@ class MainViewModel @Inject constructor(
     //직전의 배너 상단의 이름 저장
     var eveTitle: String = ""
 
-    private var orderCheckDialogCallback:OrderCheckDialogCallback?=null
+   // private var orderCheckDialogCallback:OrderCheckDialogCallback?=null
     private var hasPaymentIdBeenSet:Boolean ?= null
 
     //paymentId
@@ -88,31 +88,41 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-    fun setOrderCheckDialogCallback(callback: OrderCheckDialogCallback) {
-        this.orderCheckDialogCallback = callback
-    }
 
+   /* fun setOrderCheckDialogCallback(callback: OrderCheckDialogCallback) {
+        this.orderCheckDialogCallback = callback
+    }*/
+
+    //paymentid 설정 및 주문
     fun setPaymentId(name:String) {
-        Log.d("mainviewmodel","set paymentId:")
+        Log.d("mainviewmodel","set paymentId start")
+        //주문내역 화면이고 paymenrId가 아직 없다면 그냥 return
         if(name.equals("order")&&hasPaymentIdBeenSet==null){
             Log.d("mainviewmodel","paymentId: $paymentId")
             return
         }
-        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않음
+
+        // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않고 주문
         if (hasPaymentIdBeenSet==true) {
-            orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
-            Log.d("mainviewmodel","paymentId: $paymentId")
+            //orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
+            Log.d("mainviewmodel"," paymentid true paymentId: $paymentId")
+            _paymentIdState.value=PaymentIdState.Success(paymentId!!)
+            makeOrderHistory()
             return
         }else{
+
+            ///paymenrId가 없으므로 가져오고 서버에서 성공적으로 가져왔다면 주문
             Log.d("mainviewmodel", "haspaymentidbeenset is false")
             viewModelScope.launch {
                 Log.d("mainviewmodel", "viewModelScope.launch 시작")
                 authRepository.getPaymentId().onSuccess { response ->
+
                     // paymentId를 성공적으로 받아왔으므로, hasPaymentIdBeenSet를 true로 설정하고 LiveData를 업데이트
                     hasPaymentIdBeenSet = true
                     _paymentIdState.value = PaymentIdState.Success(response.data)
                     paymentId = response.data
-                    orderCheckDialogCallback?.handleOrderDetails(response.data)
+                    makeOrderHistory()
+                    //orderCheckDialogCallback?.handleOrderDetails(response.data)
                     Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
                 }.onFailure {
                     Log.e("mainviewmodel", "Error:${it.message}")
@@ -177,6 +187,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    //장바구니 내역 주문내역 서버로 보내기
     fun makeOrderHistory(){
         val list = _bagList.value?.map { bag ->
             RequestOrderDto.OrderRequestDtoList(bag.id, bag.count)
@@ -184,9 +195,11 @@ class MainViewModel @Inject constructor(
 
         var request = RequestOrderDto(paymentId!!, list)
         viewModelScope.launch {
+            //주문하기. orderhistory에 주문내역을 보냄
             authRepository.makeOrder(request).onSuccess {
+                Log.d("mainviewmodel","make orderhistory success")
                 _orderState.value=OrderState.Success
-                Log.d("mainviewmodel","success")
+                _bagList.value!!.clear()
             }.onFailure {
                 Log.e("mainviewmodel","makeorderhistory Error:${it.message}")
                 if (it is HttpException) {
@@ -221,6 +234,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun setBagShow(bagShow:Boolean){
-        _isBagShow.value=bagShow
+        _isBagShow.postValue(bagShow)
     }
+
+    fun setOrderStateLoading(){_orderState.value=OrderState.Loading}
+
+    fun setPaymentStateLoading(){_paymentIdState.value=PaymentIdState.Loading}
 }

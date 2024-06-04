@@ -1,6 +1,7 @@
 package com.capston2024.capstonapp.presentation.order
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,13 @@ class OrderAdapter(
     override fun getItemCount(): Int = orderHistoryList.size
 
     fun getOrderHistoryList(historyList:List<ResponseOrderHistoryDto.OrderHistoryResponseDtoList>){
+        Log.d("orderadapter","is list null?: ${historyList==null}, ${historyList.size}")
+        for(history in historyList){
+            Log.d("orderadapter","is history null?: ${history.orderResponseDtoList==null}")
+            for(order in history.orderResponseDtoList){
+                Log.d("orderadapter","order:${order.foodName}")
+            }
+        }
         orderHistoryList.clear()
         orderHistoryList.addAll(historyList)
         notifyDataSetChanged()

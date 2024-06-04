@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.databinding.ActivityMainBinding
-import com.capston2024.capstonapp.presentation.startend.PayingActivity
 import com.capston2024.capstonapp.presentation.aimode.AIFragment
 import com.capston2024.capstonapp.presentation.aimode.AIViewModel
 import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
@@ -19,6 +18,7 @@ import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 import com.capston2024.capstonapp.presentation.main.menu.MenuFragment
 import com.capston2024.capstonapp.presentation.order.OrderFragment
 import com.capston2024.capstonapp.presentation.order.PaymentListener
+import com.capston2024.capstonapp.presentation.startend.CompletePaymentActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initBinds()
         setFragments()
         detachChange()
@@ -42,6 +41,10 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     private fun initBinds() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // 상태 바와 네비게이션 바 숨기기
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
     }
 
     private fun setFragments() {
@@ -238,7 +241,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
 
 
     override fun CompletePayment() {
-        var intent = Intent(this, PayingActivity::class.java)
+        var intent = Intent(this, CompletePaymentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish()
