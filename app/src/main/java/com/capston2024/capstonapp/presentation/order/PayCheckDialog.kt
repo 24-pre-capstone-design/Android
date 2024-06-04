@@ -24,28 +24,16 @@ class PayCheckDialog : DialogFragment() {
     private val binding
         get() = _binding!!
 
-    private var listener: PayCheckDialogListener? = null
-
-    interface PayCheckDialogListener {
-        fun onDialogConfirmed()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as? PayCheckDialogListener
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
+    private var paymentListener: PaymentListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext(), R.style.CustomDialog)
+
         dialog.setContentView(R.layout.dialog_paycheck)
         val width = resources.getDimensionPixelSize(R.dimen.dialog_width)
         val height = resources.getDimensionPixelSize(R.dimen.dialog_height)
         dialog.window?.setLayout(width, height)
+
         return dialog
     }
 
@@ -63,11 +51,15 @@ class PayCheckDialog : DialogFragment() {
     }
 
     private fun clickButton() {
+        if(activity is PaymentListener){
+            paymentListener=activity as PaymentListener
+        }
         binding.btnClose.setOnClickListener {
             dismiss()
         }
 
         binding.btnOrder.setOnClickListener {
+            //paymentListener?.CompletePayment()
             showPopup()
             dismiss()
         }
@@ -84,7 +76,7 @@ class PayCheckDialog : DialogFragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             payingDL.dismiss()
-            listener?.onDialogConfirmed()
+            paymentListener?.CompletePayment()
         }, 5000)
     }
 

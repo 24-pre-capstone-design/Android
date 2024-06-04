@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
-class OrderFragment:Fragment(), PayCheckDialog.PayCheckDialogListener {
+class OrderFragment:Fragment() {
     private var _binding:FragmentOrderBinding?=null
     private val binding:FragmentOrderBinding
         get()= requireNotNull(_binding){"null"}
@@ -132,9 +132,6 @@ class OrderFragment:Fragment(), PayCheckDialog.PayCheckDialogListener {
         binding.btnBack.setOnClickListener {
             mainViewModel.isVisibleOrderList(false)
         }
-    }
-    override fun onDialogConfirmed() {
-        goToNextScreen()
     }
 
     private fun goToNextScreen() {

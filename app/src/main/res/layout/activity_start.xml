@@ -42,12 +42,27 @@
         android:layout_weight="6"
         android:gravity="center">
 
-        <ImageView
-            android:id="@+id/randomImg"
+        <FrameLayout
             android:layout_width="800dp"
-            android:layout_height="800dp"
-            android:layout_gravity="center">
-        </ImageView>
-    </LinearLayout>
+            android:layout_height="800dp">
 
+            <ImageView
+                android:id="@+id/iv_random1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="visible">
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/iv_random2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone">
+            </ImageView>
+
+        </FrameLayout>
+
+    </LinearLayout>
 </LinearLayout>

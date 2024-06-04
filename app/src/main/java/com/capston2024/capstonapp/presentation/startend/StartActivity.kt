@@ -1,49 +1,48 @@
 package com.capston2024.capstonapp.presentation.startend
 
-import android.Manifest
-import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import com.capston2024.capstonapp.databinding.ActivityStartBinding
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import coil.load
+import com.capston2024.capstonapp.BuildConfig
 import com.capston2024.capstonapp.R
+import com.capston2024.capstonapp.extension.FoodState
+import com.capston2024.capstonapp.presentation.aimode.AIViewModel
 import com.capston2024.capstonapp.presentation.main.MainActivity
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.Locale
-import kotlin.concurrent.thread
-import kotlin.random.Random
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-class StartActivity : Activity() {
+@AndroidEntryPoint
+class StartActivity : AppCompatActivity() {
     private lateinit var binding:ActivityStartBinding
-    private var textToSpeech: TextToSpeech? = null
-    var isTTSReady = false // TTS 준비 상태 플래그
-    private var handler: Handler? = null
-    private var runnable: Runnable? = null
+    private val aiViewModel: AIViewModel by viewModels()
+    private val startViewModel:StartViewModel by viewModels()
+    private val handler = Handler(Looper.getMainLooper())
+    private var imageUpdateRunnable: Runnable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
         setting()
+        setImages()
     }
 
     private fun setting(){
+        // 상태 바와 네비게이션 바 숨기기
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
         binding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.startScreen.setOnClickListener{
@@ -53,137 +52,91 @@ class StartActivity : Activity() {
             finish()
         }
 
-        val imageView: ImageView = findViewById(R.id.randomImg)
-        fetchRandomImage { imageUrl ->
-            loadImageFromUrl(imageUrl) { bitmap ->
-                runOnUiThread {
-                    imageView.setImageBitmap(bitmap)
+        getImages()
+    }
+
+    private fun getImages(){
+        aiViewModel.getData()
+        lifecycleScope.launch {
+            aiViewModel.allFoodState.collect{ foodState ->
+                when(foodState){
+                    is FoodState.Success ->{
+                        var list:MutableList<String> = mutableListOf()
+                        for(foodImg in foodState.foodList){
+                            list.add(BuildConfig.BASE_URL+foodImg.pictureURL)
+                        }
+                        startViewModel.updateImages(list)
+                    }
+                    is FoodState.Loading -> {}
+                    is FoodState.Error -> {}
                 }
             }
         }
-
-        //권한 설정
-        requestPermission()
-        //tts 객체 초기화
-        resetTTS()
     }
 
-    private fun requestPermission() {
-        // 버전 체크, 권한 허용했는지 체크
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.RECORD_AUDIO), 0
-            )
-        }
-    }
-
-    private fun resetTTS() {
-        // TTS 객체 초기화
-        textToSpeech = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech?.setLanguage(Locale.KOREAN)
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    // 언어 데이터가 없거나 지원하지 않는 언어일 때 처리
-                    Log.e("aifragment", "Language is not supported")
-                    Toast.makeText(this, "TTS 언어 데이터가 필요합니다. Google TTS 앱에서 데이터를 설치해주세요.", Toast.LENGTH_LONG).show()
-                    // 사용자를 Google TTS 앱 또는 설정 페이지로 안내할 수 있는 인텐트 실행
-                    val installIntent = Intent()
-                    installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-                    this?.startActivity(installIntent)
-                } else {
-                    isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(5.0f) // TTS 속도 설정
-                    speakInitialMessage() // 초기 메시지 음성 출력
-                }
-            } else {
-                // TTS 초기화 실패 처리
-                Log.e("aifragment", "Initialization failed")
-                Toast.makeText(this, "TTS 초기화에 실패하였습니다. 앱 설정에서 TTS 엔진을 확인해주세요.", Toast.LENGTH_LONG).show()
+    //
+    private fun setImages() {
+        startViewModel.foodImages.observe(this) { images ->
+            if (images.isNotEmpty()) {
+                Log.d("startactivity", "images success")
+                startImageUpdateCycle(images)
             }
         }
     }
 
-    private fun startRepeatingTask() {
-        handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
+    private var activeImageView: ImageView? = null
+
+    private fun applyAnimation(view: View, animationResource: Int, visibilityAfter: Int) {
+        val animation = AnimationUtils.loadAnimation(this, animationResource)
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) {
+                view.visibility = visibilityAfter
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+        view.startAnimation(animation)
+    }
+
+    private fun switchImage(currentImageView: ImageView, nextImage: String) {
+        // Coil 라이브러리를 사용하여 이미지 로드
+        currentImageView.load(nextImage) {
+            crossfade(true) // 이미지 로딩 시 크로스페이드 효과 적용
+            crossfade(500) // 크로스페이드 지속 시간 설정 (옵션)
+        }
+    }
+
+
+    private fun startImageUpdateCycle(images: List<String>) {
+        val handler = Handler(Looper.getMainLooper())
+        val updateRunnable = object : Runnable {
             override fun run() {
-                speakInitialMessage()
-                handler?.postDelayed(this, 10000) // 10초 후에 다시 실행
-            }
-        }
-        runnable?.let { handler?.post(it) }
-    }
+                val randomIndex = (images.indices).random()
+                val nextImage = images[randomIndex]
+                val currentImageView = if (activeImageView == binding.ivRandom1) binding.ivRandom2 else binding.ivRandom1
+                val outgoingImageView = if (activeImageView == binding.ivRandom1) binding.ivRandom1 else binding.ivRandom2
 
-    private fun stopRepeatingTask() {
-        handler?.removeCallbacks(runnable!!)
-    }
+                // 현재 이미지 전환
+                switchImage(currentImageView, nextImage)
 
-    override fun onResume() {
-        super.onResume()
-        startRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보일 때 TTS 시작
-    }
+                // 애니메이션 적용
+                applyAnimation(currentImageView, R.anim.slide_in, View.VISIBLE)
+                applyAnimation(outgoingImageView, R.anim.slide_out, View.GONE)
 
-    override fun onPause() {
-        super.onPause()
-        stopRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보이지 않을 때 TTS 중단
-    }
-
-    private fun speakInitialMessage() {
-        if (isTTSReady) {
-            // 예제 메시지를 TTS로 말하기
-            textToSpeech?.speak(
-                getString(R.string.ai_explain),
-                TextToSpeech.QUEUE_FLUSH,
-                null,
-                ""
-            )
-            Log.d("aifragment","tts is ready")
-        }
-    }
-
-    companion object {
-        fun fetchRandomImage(callback: (String) -> Unit) {
-            val client = OkHttpClient()
-
-            val request = Request.Builder()
-                .url("https://reqres.in/api/users")
-                .build()
-
-            thread {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                    val responseData = response.body?.string() ?: throw IOException("Response body is null")
-
-                    val json = JSONObject(responseData)
-                    val dataArray = json.getJSONArray("data")
-                    val randomData = dataArray.getJSONObject(Random.nextInt(dataArray.length()))
-                    val imageUrl = randomData.getString("avatar")
-
-                    callback(imageUrl)
-                }
+                activeImageView = currentImageView
+                handler.postDelayed(this, 3000) // 3초마다 실행
             }
         }
 
-        fun loadImageFromUrl(imageUrl: String, callback: (Bitmap?) -> Unit) {
-            thread {
-                try {
-                    val url = URL(imageUrl)
-                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    connection.doInput = true
-                    connection.connect()
-                    val input: InputStream = connection.inputStream
-                    val bitmap = BitmapFactory.decodeStream(input)
-                    callback(bitmap)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    callback(null)
-                }
-            }
-        }
+        // 초기 활성 이미지 뷰 설정
+        activeImageView = findViewById(R.id.iv_random1)
+        handler.post(updateRunnable)
     }
 
+    override fun onDestroy() {
+        imageUpdateRunnable?.let { handler.removeCallbacks(it) }
+        super.onDestroy()
+    }
 }
