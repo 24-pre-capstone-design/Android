@@ -26,13 +26,13 @@ class OrderViewModel @Inject constructor(
 
     private val _orderTotalPrice = MutableLiveData<Int>(0)
     var orderTotalPrice:LiveData<Int> = _orderTotalPrice
+
+    //paymentid로 주문내역 가져오기
     fun getOrderHistory(paymentId:Int){
         viewModelScope.launch {
             authRepository.getOrderHistory(paymentId).onSuccess { response ->
                 when(response.success){
                     true -> {
-                        Log.d("orderviewmodel","getorderhistory success:${response.data.paymentId}")
-                        Log.d("orderviewmodel","getorderhistory success: ${response.toOrderHistoryList()}")
                         _orderHistoryState.value=OrderHistoryState.Success(response.toOrderHistoryList())
                         _orderTotalPrice.value = response.data.sumOfPaymentCost
                     }

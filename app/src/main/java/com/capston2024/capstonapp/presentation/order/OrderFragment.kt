@@ -1,10 +1,12 @@
 package com.capston2024.capstonapp.presentation.order
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,12 +18,14 @@ import com.capston2024.capstonapp.extension.OrderHistoryState
 import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
+import com.capston2024.capstonapp.presentation.startend.CompletePaymentActivity
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
-class OrderFragment:Fragment() {
+class OrderFragment:Fragment(), PayCheckDialog.PayCheckDialogListener {
     private var _binding:FragmentOrderBinding?=null
     private val binding:FragmentOrderBinding
         get()= requireNotNull(_binding){"null"}
@@ -44,20 +48,43 @@ class OrderFragment:Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setViewModelAndAdapter()
         clickButtons()
+        showOrderHistory()
     }
 
     private fun setViewModelAndAdapter(){
         mainViewModel=ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         orderAdapter= OrderAdapter(requireContext())
         orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
+        binding.rvOrder.adapter=orderAdapter
 
         //mainViewModel.setPaymentId("order")
+            //paymentid를 서버에 보내서 주문내역 받아옴
+        lifecycleScope.launch {
+            mainViewModel.orderState.collect{orderState ->
+                when(orderState){
+                    is OrderState.Success -> {
+                        Log.d("orderfragment","orderstate is success")
+                        getOrderList()
+                    }
+                    is OrderState.Loading -> {
+                        Log.d("orderfragment","orderstate is loading")
+                    }
+                    is OrderState.Error->{}
+                }
+            }
+        }
+        val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
+        orderViewModel.orderTotalPrice.observe(viewLifecycleOwner) { totalPrice ->
+            binding.tvTotalPrice.text = getString(R.string.bag_price, formatter.format(totalPrice?:0))
+        }
+    }
+    private fun getOrderList(){
         lifecycleScope.launch {
             //paymentid를 서버에 보내서 주문내역 받아옴
             mainViewModel.paymentIdState.collect{paymentIdState ->
                 when(paymentIdState){
                     is PaymentIdState.Success ->{
-                        Log.d("orderframgent","paymentid state success")
+                        Log.d("orderfragment","paymentid state success")
                         orderViewModel.getOrderHistory(paymentIdState.paymentId)
                         //mainViewModel.setPaymentState()
                     }
@@ -66,17 +93,17 @@ class OrderFragment:Fragment() {
                 }
             }
         }
-        binding.rvOrder.adapter=orderAdapter
+    }
+
+    private fun showOrderHistory(){
         lifecycleScope.launch {
             //주문내역 서버에서 받아오기 성공했는지 확인하고 화면에 보여줌
             orderViewModel.orderHistoryState.collect{orderHistoryState ->
                 when(orderHistoryState){
                     is OrderHistoryState.Success -> {
-                        if (isAdded) { // Fragment가 여전히 추가된 상태인지 확인
-                            Log.d("orderfragment", "orderhistorystate is success")
-                            orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
-                            mainViewModel.setPaymentStateLoading()
-                        }
+                        Log.d("orderfragment", "orderhistorystate is success")
+                        orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
+                        //mainViewModel.setPaymentStateLoading()
                     }
                     is OrderHistoryState.Error -> {
                         Log.e("orderfragment","foodstate is error")
@@ -87,24 +114,43 @@ class OrderFragment:Fragment() {
                 }
             }
         }
-        val formatter= NumberFormat.getNumberInstance(Locale.KOREA)
-        orderViewModel.orderTotalPrice.observe(viewLifecycleOwner) { totalPrice ->
-            binding.tvTotalPrice.text = getString(R.string.bag_price, formatter.format(totalPrice?:0))
-        }
     }
 
-    private fun clickButtons(){
+    private fun clickButtons() {
         binding.btnPay.setOnClickListener {
             Log.d("clicked", "btnPay clicked!!!!")
-            val dialog=PayCheckDialog()
-            dialog.isCancelable=false
-            activity?.let{dialog.show(it.supportFragmentManager, "ConfirmDialog")}
+            val dialog = PayCheckDialog()
+            dialog.isCancelable = false
+
+            (activity as? AppCompatActivity)?.supportFragmentManager?.let { fragmentManager ->
+                dialog.show(fragmentManager, "ConfirmDialog")
+            } ?: run {
+                Log.e("OrderFragment", "Activity is null or not an AppCompatActivity")
+            }
         }
 
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             mainViewModel.isVisibleOrderList(false)
         }
     }
+    override fun onDialogConfirmed() {
+        goToNextScreen()
+    }
+
+    private fun goToNextScreen() {
+        val currentActivity = activity
+        if (currentActivity != null && !currentActivity.isFinishing && !currentActivity.isDestroyed) {
+            val intent = Intent(currentActivity, CompletePaymentActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            currentActivity.finish()
+        } else {
+            Log.e("OrderFragment", "Activity is null or not attached")
+        }
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

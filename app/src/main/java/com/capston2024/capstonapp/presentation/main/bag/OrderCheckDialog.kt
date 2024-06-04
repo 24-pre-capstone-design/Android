@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 class OrderCheckDialog(
     private val bagAdapter: BagAdapter,
     private val mainViewModel: MainViewModel,
-) : DialogFragment(), OrderCheckDialogCallback {
+) : DialogFragment()  {
     private var _binding: DialogOrdercheckBinding? = null
     private val binding
         get() = _binding!!
@@ -56,14 +56,7 @@ class OrderCheckDialog(
         Log.d("ordercheckdialog","orderstate: ${mainViewModel.orderState.value}")
         collectOrderState()
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        binding.btnClose.setOnClickListener {
-            dismiss()
-        }
-
-        binding.btnOrder.setOnClickListener {
-            processOrder()
-        }
+        clickButton()
         return view
     }
 
@@ -89,10 +82,50 @@ class OrderCheckDialog(
         }
     }
 
+    private fun removeBagShowOrder() {
+        // BagFragment 제거
+        //dismiss()
+        //장바구니 내역 초기화
+        mainViewModel.clearBagList()
+        val fragmentManager = requireActivity().supportFragmentManager
+        var fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
+        fragment?.let {
+            mainViewModel.setBagShow(false)
+
+            val transaction = fragmentManager.beginTransaction()
+            transaction.remove(it)
+            transaction.commit()
+
+            fragmentManager.executePendingTransactions()
+
+            val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
+            Log.d("ordercheckdialog", "Fragment removed: $isFragmentRemoved")
+        }
+        mainViewModel.setOrderStateLoading()
+        //orderFragment 보이기
+        //fragment=fragmentManager.findFragmentById(R.id.fcv_order)
+        fragmentManager.beginTransaction()
+            .replace(R.id.fcv_order, OrderFragment())
+            .commit()
+        mainViewModel.isVisibleOrderList(true)
+        dismiss()
+    }
+
+    private fun clickButton(){
+        binding.btnClose.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnOrder.setOnClickListener {
+            //장바구니 내역들 주문내역 서버로 보내기
+            mainViewModel.setPaymentId("process")
+        }
+    }
+
     // Order 버튼 클릭 시 처리
     private fun processOrder() {
-        mainViewModel.setOrderCheckDialogCallback(this)
-        mainViewModel.setPaymentId("process")
+        //mainViewModel.setOrderCheckDialogCallback(this)
+
 
         //handleOrderDetails(mainViewModel.getPaymentId()!!)
 
@@ -129,7 +162,7 @@ class OrderCheckDialog(
             }
         }*/
     }
-    override fun handleOrderDetails(paymentId: Int) {
+   /* override fun handleOrderDetails(paymentId: Int) {
         Log.d("ordeercheckdialog","handleorderdetail is run")
         //paymentid 설정됨 // paymentId 가져오기
         if (paymentId != null) {
@@ -141,36 +174,9 @@ class OrderCheckDialog(
             mainViewModel.makeOrderHistory()
         }
         Log.d("ordercheckdialog","handleorderdetail is end")
-    }
+    }*/
 
-    private fun removeBagShowOrder() {
-        // BagFragment 제거
-        //dismiss()
-        //장바구니 내역 초기화
-        mainViewModel.clearBagList()
-        val fragmentManager = requireActivity().supportFragmentManager
-        var fragment = fragmentManager.findFragmentById(R.id.fcv_bag)
-        fragment?.let {
-            mainViewModel.setBagShow(false)
 
-            val transaction = fragmentManager.beginTransaction()
-            transaction.remove(it)
-            transaction.commit()
-
-            fragmentManager.executePendingTransactions()
-
-            val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
-            Log.d("ordercheckdialog", "Fragment removed: $isFragmentRemoved")
-        }
-        mainViewModel.setOrderStateLoading()
-        //orderFragment 보이기
-        //fragment=fragmentManager.findFragmentById(R.id.fcv_order)
-        fragmentManager.beginTransaction()
-            .replace(R.id.fcv_order, OrderFragment())
-            .commit()
-        mainViewModel.isVisibleOrderList(true)
-        dismiss()
-    }
 
     /*override fun onDetach() {
         super.onDetach()
