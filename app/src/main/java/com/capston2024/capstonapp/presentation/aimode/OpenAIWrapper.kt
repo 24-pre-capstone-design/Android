@@ -58,6 +58,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     |'김치찌게', '김치 찌개', '김치 찌게' 는 모두 '김치찌개' 야
                     |손님이 '식혜' 를 달라고 하면 '전통식혜' 를 장바구니에 넣어야돼
                     |주문을 받은 후 소요시간 같은건 얼마나 걸릴지 모르니 언급하지 말아줘
+                    |Don't use '*'(asterisk). 
                     |""".trimMargin()
             )
         )
