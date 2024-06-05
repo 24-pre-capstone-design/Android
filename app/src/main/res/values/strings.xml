@@ -52,4 +52,6 @@
     <string name="popup_pay_title">결제 하시겠습니까?</string>
     <string name="popup_pay">결제하기</string>
 
+    <string name="complete_bye">감사합니다. 한식다이어리에 또 방문해주세요. 안녕히가십시오.</string>
+
 </resources>

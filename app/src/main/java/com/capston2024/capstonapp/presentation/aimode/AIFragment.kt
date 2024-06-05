@@ -274,6 +274,7 @@ class AIFragment : Fragment() {
         }
     }
 
+    //ai모드에서 결제하면 결제 중 화면 뜨고 음성 출력은 안됨
     fun stop(){
         textToSpeech?.stop()
         textToSpeech?.shutdown()
