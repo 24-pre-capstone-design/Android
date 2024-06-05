@@ -32,7 +32,11 @@ import java.io.Serializable
 import kotlin.collections.mutableMapOf
 import kotlin.math.log
 
-class CartManager(private val aiViewModel: AIViewModel, private val mainActivity: MainActivity, private val mainViewModel: MainViewModel) {
+class CartManager(
+    private val aiViewModel: AIViewModel,
+    private val mainActivity: MainActivity,
+    private val mainViewModel: MainViewModel,
+    ) {
 
     // companion object:Fragment() {
     //결제하기 눌렀을 때 로딩 다이얼로그 뜨고 바로 끝화면으로 넘어가게 함

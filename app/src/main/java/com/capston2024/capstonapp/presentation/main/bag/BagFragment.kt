@@ -80,12 +80,16 @@ class BagFragment : Fragment(), BagListUpdateListener {
             mainViewModel.setBagShow(false)
 
             val transaction = fragmentManager.beginTransaction()
-            transaction.remove(it)
-            transaction.commit()
-
-            fragmentManager.executePendingTransactions()
+            // 애니메이션 설정
+            transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.slide_out_right
+            )
+            transaction.remove(this@BagFragment).commit()
+        //fragmentManager.executePendingTransactions()
         }
     }
+
 
     override fun onBagListUpdated(updatedList: MutableList<Bag>) {
         mainViewModel.updateBagList(updatedList)

@@ -28,7 +28,13 @@ import kotlinx.serialization.json.jsonPrimitive
 
 /** Uses OpenAI Kotlin lib to call chat model */
 @OptIn(BetaOpenAI::class)
-class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val mainActivity: MainActivity, val mainViewModel: MainViewModel) {
+class OpenAIWrapper(
+    val context: Context?,
+    aiViewModel: AIViewModel,
+    mainActivity: MainActivity,
+    mainViewModel: MainViewModel,
+    private val aiFragment: AIFragment
+) {
     private val openAIToken: String = Constants.OPENAI_TOKEN
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
@@ -171,6 +177,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                 }
                 cartManager.PIAname()->{
                     Log.i("LLM-WK", "Argument nothing")
+                    aiFragment.stop()
                     functionResponse = cartManager.payInAiFunction()
                 }
 

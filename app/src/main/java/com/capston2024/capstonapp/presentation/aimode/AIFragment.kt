@@ -91,7 +91,8 @@ class AIFragment : Fragment() {
             requireContext(),
             aiViewModel,
             requireActivity() as MainActivity,
-            mainViewModel
+            mainViewModel,
+            this
         )
 
         with(binding) {
@@ -244,16 +245,6 @@ class AIFragment : Fragment() {
         textToSpeech?.stop()
     }
 
-    override fun onResume() {
-        super.onResume()
-        //startRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보일 때 TTS 시작
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //stopRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보이지 않을 때 TTS 중단
-    }
-
     private fun speakInitialMessage() {
         Log.d("aifragment","startinitialmessage, ttsready: $isTTSReady")
         if (isTTSReady) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
@@ -270,12 +261,6 @@ class AIFragment : Fragment() {
         }
     }
 
-    private fun isFragmentVisible(): Boolean {
-        Log.d("aifragment","isvisible:$isVisible")
-        return isVisible
-    }
-
-
     private fun speakResponse(text: String) {
         if (isTTSReady) {
             textToSpeech?.speak(
@@ -287,6 +272,11 @@ class AIFragment : Fragment() {
         } else {
             Log.d("aifragment", "TTS is not ready")
         }
+    }
+
+    fun stop(){
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
     }
 
     /*private fun addChatItem(message:String, type:MessageType){
