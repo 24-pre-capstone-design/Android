@@ -78,10 +78,6 @@ class AIFragment : Fragment() {
         requestPermission()
         //tts 객체 초기화
         resetTTS()
-
-
-        //addChatItem(requireContext().getString(R.string.ai_explain), MessageType.AI_CHAT)
-        //clickButton()
     }
 
     private fun setting() {
@@ -89,9 +85,15 @@ class AIFragment : Fragment() {
         //binding.rvAi.adapter = AIAdapter(messages)
         messageList = mutableListOf()
         chatAdapter = ChatAdapter(messageList)
-        mainViewModel= ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         aiViewModel = ViewModelProvider(requireActivity()).get(AIViewModel::class.java)
-        openAIWrapper = OpenAIWrapper(requireContext(), aiViewModel, requireActivity() as MainActivity, mainViewModel)
+        openAIWrapper = OpenAIWrapper(
+            requireContext(),
+            aiViewModel,
+            requireActivity() as MainActivity,
+            mainViewModel,
+            this
+        )
 
         with(binding) {
             rvAi.layoutManager = LinearLayoutManager(requireContext())
@@ -122,15 +124,22 @@ class AIFragment : Fragment() {
             }
         }
 
-            mainViewModel.mode.observe(viewLifecycleOwner){mode ->
-                when(mode) {
-                    FragmentMode.AI_MODE -> startRepeatingTask() // AIMode일 때 TTS 시작
-                    FragmentMode.BASIC_MODE -> stopRepeatingTask() // BasicMode일 때 TTS 중단
-                }
+        mainViewModel.mode.observe(viewLifecycleOwner) { mode ->
+            when (mode) {
+                FragmentMode.AI_MODE -> {
+                    Log.d("aiffragment","mode: aimode")
+                    startSingleTask()
+                } // AIMode일 때 TTS 시작
+                FragmentMode.BASIC_MODE -> {
+                    Log.d("aiffragment","mode: basicmode")
+                    stopSingleTask()
+                } // BasicMode일 때 TTS 중단
             }
+        }
     }
 
-   /* private fun clickButton() {
+    private fun clickButton() {
+        stopSingleTask()
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
             setRecognitionListener(recognitionListener)
             // RecognizerIntent 생성
@@ -144,19 +153,19 @@ class AIFragment : Fragment() {
             // 여기에 startListening 호출 추가
             startListening(intent)
         }
-    }*/
-
-    private fun clickButton() {
-        handleUserMessage(binding.etUserInput.text.toString())
-        messageList.add(
-            CustomChatMessage(
-                ChatRole.User,
-                userContent = binding.etUserInput.text.toString()
-            )
-        )
-        chatAdapter.notifyDataSetChanged()
-        binding.etUserInput.setText("") //초기화
     }
+
+    /* private fun clickButton() {
+         handleUserMessage(binding.etUserInput.text.toString())
+         messageList.add(
+             CustomChatMessage(
+                 ChatRole.User,
+                 userContent = binding.etUserInput.text.toString()
+             )
+         )
+         chatAdapter.notifyDataSetChanged()
+         binding.etUserInput.setText("") //초기화
+     }*/
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -196,51 +205,49 @@ class AIFragment : Fragment() {
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     // 언어 데이터가 없거나 지원하지 않는 언어일 때 처리
                     Log.e("aifragment", "Language is not supported")
-                    Toast.makeText(context, "TTS 언어 데이터가 필요합니다. Google TTS 앱에서 데이터를 설치해주세요.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "TTS 언어 데이터가 필요합니다. Google TTS 앱에서 데이터를 설치해주세요.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     // 사용자를 Google TTS 앱 또는 설정 페이지로 안내할 수 있는 인텐트 실행
                     val installIntent = Intent()
                     installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(5.0f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(1.7f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {
                 // TTS 초기화 실패 처리
                 Log.e("aifragment", "Initialization failed")
-                Toast.makeText(context, "TTS 초기화에 실패하였습니다. 앱 설정에서 TTS 엔진을 확인해주세요.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "TTS 초기화에 실패하였습니다. 앱 설정에서 TTS 엔진을 확인해주세요.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
 
-    private fun startRepeatingTask() {
+    private fun startSingleTask() {
         handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                speakInitialMessage()
-                handler?.postDelayed(this, 20000) // 20초 후에 다시 실행
-            }
+        runnable = Runnable {
+            Log.d("aifragment","startsingletask")
+            speakInitialMessage()
         }
         runnable?.let { handler?.post(it) }
     }
 
-    private fun stopRepeatingTask() {
-        handler?.removeCallbacks(runnable!!)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //startRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보일 때 TTS 시작
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //stopRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보이지 않을 때 TTS 중단
+    private fun stopSingleTask() {
+        handler!!.removeCallbacks(runnable!!)
+        textToSpeech?.stop()
     }
 
     private fun speakInitialMessage() {
-        if (isTTSReady && isFragmentVisible()) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
+        Log.d("aifragment","startinitialmessage, ttsready: $isTTSReady")
+        if (isTTSReady) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
             // 설명 메시지를 TTS로 말하기
             textToSpeech?.speak(
                 getString(R.string.ai_mode_explain),
@@ -249,14 +256,12 @@ class AIFragment : Fragment() {
                 ""
             )
             Log.d("aifragment", "tts is ready")
+        }else{
+            Log.d("aifragment","tts is not ready")
         }
     }
-    private fun isFragmentVisible(): Boolean {
-        return isVisible && !isHidden
-    }
 
-
-    private fun speakResponse(text:String){
+    private fun speakResponse(text: String) {
         if (isTTSReady) {
             textToSpeech?.speak(
                 text,
@@ -267,6 +272,12 @@ class AIFragment : Fragment() {
         } else {
             Log.d("aifragment", "TTS is not ready")
         }
+    }
+
+    //ai모드에서 결제하면 결제 중 화면 뜨고 음성 출력은 안됨
+    fun stop(){
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
     }
 
     /*private fun addChatItem(message:String, type:MessageType){
@@ -331,7 +342,7 @@ class AIFragment : Fragment() {
                 messageList.add(
                     CustomChatMessage(
                         ChatRole.User,
-                        userContent =text
+                        userContent = text
                     )
                 )
                 chatAdapter.notifyDataSetChanged()

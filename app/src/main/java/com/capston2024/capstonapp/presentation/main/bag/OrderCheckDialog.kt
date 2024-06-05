@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class OrderCheckDialog(
-    private val bagAdapter: BagAdapter,
     private val mainViewModel: MainViewModel,
 ) : DialogFragment()  {
     private var _binding: DialogOrdercheckBinding? = null
@@ -75,8 +74,6 @@ class OrderCheckDialog(
     }
 
     private fun removeBagShowOrder() {
-        // BagFragment 제거
-        //dismiss()
         //장바구니 내역 초기화
         mainViewModel.clearBagList()
         val fragmentManager = requireActivity().supportFragmentManager
@@ -94,8 +91,6 @@ class OrderCheckDialog(
             Log.d("ordercheckdialog", "Fragment removed: $isFragmentRemoved")
         }
         mainViewModel.setOrderStateLoading()
-        //orderFragment 보이기
-        //fragment=fragmentManager.findFragmentById(R.id.fcv_order)
         fragmentManager.beginTransaction()
             .replace(R.id.fcv_order, OrderFragment())
             .commit()

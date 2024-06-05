@@ -3,16 +3,10 @@ package com.capston2024.capstonapp.presentation.order
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.capston2024.capstonapp.R
-import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.data.responseDto.ResponseOrderHistoryDto
-import com.capston2024.capstonapp.databinding.ItemOrderBinding
 import com.capston2024.capstonapp.databinding.ItemOrderHistoryBinding
-import com.capston2024.capstonapp.presentation.main.MainViewModel
 
 class OrderAdapter(
     private val context: Context,

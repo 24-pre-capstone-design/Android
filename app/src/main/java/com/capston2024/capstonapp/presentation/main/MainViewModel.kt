@@ -1,6 +1,5 @@
 package com.capston2024.capstonapp.presentation.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,8 +12,6 @@ import com.capston2024.capstonapp.domain.repository.AuthRepository
 import com.capston2024.capstonapp.extension.MenuState
 import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.extension.PaymentIdState
-import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
-//import com.capston2024.capstonapp.presentation.main.bag.OrderCheckDialogCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,48 +70,32 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.getMenuList().onSuccess { response ->
                 _menuState.value = MenuState.Success(response.makeMenuList()) // emit 대신 value 사용
-                //Log.d("Success","Success~~:mainviewmodel")
                 _firstMenu.value = response.makeMenuList()[0]
-                Log.d("mainviewmodel","firstmenu: ${_firstMenu.value?.name}")
             }.onFailure {
-                Log.e("Error", "Error:${it.message}")
                 if (it is HttpException) {
                     val data = it.response()?.errorBody()?.byteString()?.toString()
                     val errorBody = data?.substringAfter("message")
-                    if (errorBody != null) {
-                        Log.e("mainviewmodel", "message${errorBody}")
-                    }
                 }
             }
         }
     }
 
-   /* fun setOrderCheckDialogCallback(callback: OrderCheckDialogCallback) {
-        this.orderCheckDialogCallback = callback
-    }*/
-
     //paymentid 설정 및 주문
     fun setPaymentId(name:String) {
-        Log.d("mainviewmodel","set paymentId start")
         //주문내역 화면이고 paymenrId가 아직 없다면 그냥 return
         if(name.equals("order")&&hasPaymentIdBeenSet==null){
-            Log.d("mainviewmodel","paymentId: $paymentId")
             return
         }
 
         // hasPaymentIdBeenSet가 true일 때는 이미 paymentId가 설정되었으므로, 더 이상 서버에서 가져오지 않고 주문
         if (hasPaymentIdBeenSet==true) {
-            //orderCheckDialogCallback?.handleOrderDetails(paymentId!!)
-            Log.d("mainviewmodel"," paymentid true paymentId: $paymentId")
             _paymentIdState.value=PaymentIdState.Success(paymentId!!)
             makeOrderHistory()
             return
         }else{
 
             ///paymenrId가 없으므로 가져오고 서버에서 성공적으로 가져왔다면 주문
-            Log.d("mainviewmodel", "haspaymentidbeenset is false")
             viewModelScope.launch {
-                Log.d("mainviewmodel", "viewModelScope.launch 시작")
                 authRepository.getPaymentId().onSuccess { response ->
 
                     // paymentId를 성공적으로 받아왔으므로, hasPaymentIdBeenSet를 true로 설정하고 LiveData를 업데이트
@@ -123,22 +104,15 @@ class MainViewModel @Inject constructor(
                     paymentId = response.data
                     makeOrderHistory()
                     //orderCheckDialogCallback?.handleOrderDetails(response.data)
-                    Log.d("mainviewmodel", "paymentId: ${paymentId}, peymentidstate is ${_paymentIdState.value}")
                 }.onFailure {
-                    Log.e("mainviewmodel", "Error:${it.message}")
                     if (it is HttpException) {
                         val data = it.response()?.errorBody()?.byteString()?.toString()
                         val errorBody = data?.substringAfter("message")
-                        if (errorBody != null) {
-                            Log.e("mainviewmodel", "paymentId error: ${errorBody}")
-                        }
                     }
                 }
             }
         }
     }
-    /*fun getHasPaymentIdBeenset(): Boolean = hasPaymentIdBeenSet
-    fun getPaymentId():Int = paymentId!!*/
 
     init {
         _bagList.value = mutableListOf()  // 초기화: 빈 MutableList로 설정
@@ -146,7 +120,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun addToBagList(items: Bag) {
-        Log.d("mainviewmodel", "mainviewmodel: fooditem-${items.count}")
         val currentList = _bagList.value ?: mutableListOf()
         for(i in 0 until  currentList.size){
             if(items.name.equals(currentList[i].name)){
@@ -172,13 +145,10 @@ class MainViewModel @Inject constructor(
             if (itemIndex != -1) {
                 val currentItem = updatedList[itemIndex]
 
-                Log.d("mainviewmodel", "items: ${items.name}, bag: $currentItem")
                 if (currentItem.count > quantity) {
                     currentItem.count -= quantity
-                    Log.d("mainviewmodel", "minus ${currentItem.count}")
                 } else {
                     updatedList.removeAt(itemIndex)
-                    Log.d("mainviewmodel", "bag remove! ${updatedList.size}")
                 }
 
                 // LiveData에 변경된 리스트를 새로 할당하여 업데이트를 감지하게 함
@@ -197,17 +167,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             //주문하기. orderhistory에 주문내역을 보냄
             authRepository.makeOrder(request).onSuccess {
-                Log.d("mainviewmodel","make orderhistory success")
                 _orderState.value=OrderState.Success
                 _bagList.value!!.clear()
             }.onFailure {
-                Log.e("mainviewmodel","makeorderhistory Error:${it.message}")
                 if (it is HttpException) {
                     val data = it.response()?.errorBody()?.byteString()?.toString()
                     val errorBody = data?.substringAfter("message")
-                    if (errorBody != null) {
-                        Log.e("mainviewmodel", "message${errorBody}")
-                    }
                 }
             }
         }
@@ -238,6 +203,4 @@ class MainViewModel @Inject constructor(
     }
 
     fun setOrderStateLoading(){_orderState.value=OrderState.Loading}
-
-    fun setPaymentStateLoading(){_paymentIdState.value=PaymentIdState.Loading}
 }

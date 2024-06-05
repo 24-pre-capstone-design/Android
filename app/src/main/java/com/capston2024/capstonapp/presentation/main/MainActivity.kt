@@ -2,7 +2,6 @@ package com.capston2024.capstonapp.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,6 @@ import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.databinding.ActivityMainBinding
 import com.capston2024.capstonapp.presentation.aimode.AIFragment
 import com.capston2024.capstonapp.presentation.aimode.AIViewModel
-import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
 import com.capston2024.capstonapp.presentation.main.bag.BagFragment
 import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 import com.capston2024.capstonapp.presentation.main.menu.MenuFragment
@@ -75,26 +73,11 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                     foodsFragment = FoodsFragment(firstFoodsIDValue)
                     mainViewModel.changeMenuID(firstFoodsIDValue)
                     transaction.add(R.id.fcv_main, foodsFragment!!, "foodsFragment")
-                    /*} else {
-                        val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
-                        mainViewModel.changeMenuID(firstFoodsIDValue)
-                        transaction.show(foodsFragment!!)
-                    }*/
                     transaction.hide(aiFragment)
                     mainViewModel.changeMode(FragmentMode.BASIC_MODE)
                     replaceMenuFragment(MenuFragment())
                 }
                 transaction.commit()
-
-                /*if (binding.btnChangeMode.text.equals(getString(R.string.start_ai))) {
-                    //replaceMainFragment(aiFragment, "aiFragment",FragmentMode.AI_MODE)
-                    //replaceFragment(aiFragment, FragmentMode.AI_MODE)
-                } else {
-                    val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
-                    //replaceMainFragment(FoodsFragment(firstFoodsIDValue),"foodsFragment",FragmentMode.BASIC_MODE)
-                    //replaceFragment(FoodsFragment(firstFoodsIDValue), FragmentMode.BASIC_MODE)
-                    replaceMenuFragment(MenuFragment())
-                }*/
             }
             btnOrderList.setOnClickListener {
                 mainViewModel.isVisibleOrderList(true)
@@ -125,6 +108,17 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 mainViewModel.changeMode(FragmentMode.BASIC_MODE)
             }
         }
+    } 
+
+    fun showBagFragment(bagFragment: BagFragment, type:FragmentMode){
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.slide_out_right
+            )
+            .replace(R.id.fcv_bag, bagFragment)
+            .commit()
     }
 
     private fun detachChange() {
@@ -142,7 +136,6 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                 else -> {
                     binding.btnChangeMode.text = getString(R.string.start_ai)
                     binding.tvMenuName.text = mainViewModel.firstMenu.value?.name
-                    Log.d("mainactivity", "bag show:${mainViewModel.isBagShow.value}")
                     //bagfragment가 보여지고 있었다면 보여줌
                     if (mainViewModel.isBagShow.value!!) {
                         adjustShowingBagFragment(mainViewModel.isBagShow.value!!)
@@ -164,7 +157,6 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                     if (mainViewModel.isBagShow.value!!) {
                         adjustShowingBagFragment(!mainViewModel.isBagShow.value!!)
                     }
-                    Log.d("mainactivity", "eveTitle: ${mainViewModel.eveTitle}")
                 }
 
                 else -> {
@@ -190,34 +182,6 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
             .commit()
     }
 
-    /*    private fun replaceMainFragment(fragment:Fragment, name:String, mode:FragmentMode){
-            val transaction = supportFragmentManager.beginTransaction()
-
-            if (binding.btnChangeMode.text.equals(getString(R.string.start_ai))) {
-                if(name.equals("aiFragment")){
-                    if (fragment.isAdded) {
-                        transaction.show(fragment)
-                    } else {
-                        transaction.add(R.id.fcv_main, fragment, "aiFragment")
-                    }
-                }
-
-                val foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment")
-                if (foodsFragment != null) {
-                    transaction.hide(foodsFragment)
-                }
-            } else {
-                val firstFoodsIDValue = mainViewModel.firstMenu.value?.id ?: 0
-                val foodsFragment = FoodsFragment(firstFoodsIDValue)
-                transaction.add(R.id.fcv_main, foodsFragment, "foodsFragment")
-                transaction.hide(aiFragment)
-            }
-            transaction.commit()
-
-            //mode 입력
-            mainViewModel.changeMode(mode)
-        }*/
-
     private fun adjustShowingBagFragment(showBag: Boolean) {
         if (showBag) {
             val fragment = supportFragmentManager.findFragmentById(R.id.fcv_bag)
@@ -240,7 +204,8 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     }
 
 
-    override fun CompletePayment() {
+    override fun completePayment() {
+
         var intent = Intent(this, CompletePaymentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -248,12 +213,8 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     }
 
     override fun replaceFragment(type: FragmentMode, id: Int) {
-        // foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
-
-
-        //foodsFragment = FoodsFragment(id)
         val transaction = supportFragmentManager.beginTransaction()
-       //
+
         if (foodsFragment == null) {
             foodsFragment= FoodsFragment(id)
             transaction.add(R.id.fcv_main, foodsFragment!!, "foodsFragment")
@@ -261,17 +222,6 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
             transaction.commit()
         }
         mainViewModel.changeMenuID(id)
-        //transaction.commit()
-        /*    supportFragmentManager.beginTransaction()
-                .replace(R.id.fcv_main, foodsFragment!!, "foodsFragment")
-                .commit()
-        } else {
-            // 기존 프래그먼트의 데이터를 업데이트하는 로직 추가 (필요시)
-            foodsFragment!!.updateData(id)
-            supportFragmentManager.beginTransaction()
-                .show(foodsFragment!!)
-                .commit()
-        }*/
 
         //mode 입력
         mainViewModel.changeMode(type)

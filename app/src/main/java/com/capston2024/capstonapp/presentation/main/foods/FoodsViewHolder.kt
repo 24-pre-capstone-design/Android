@@ -1,6 +1,5 @@
 package com.capston2024.capstonapp.presentation.main.foods
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.capston2024.capstonapp.BuildConfig

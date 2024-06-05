@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.capston2024.capstonapp.BuildConfig
-import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 
 class StartViewModel:ViewModel() {
     private val _foodImages= MutableLiveData<List<String>>()

@@ -35,9 +35,6 @@
         </activity>
         <activity android:name=".presentation.main.MainActivity"
             android:exported="false"></activity>
-        <activity android:name=".presentation.startend.PayingActivity"
-            android:exported="false">
-        </activity>
         <activity android:name=".presentation.startend.CompletePaymentActivity"
             android:exported="false"></activity>
     </application>

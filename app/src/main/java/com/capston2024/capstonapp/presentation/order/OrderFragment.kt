@@ -8,19 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.capston2024.capstonapp.R
-import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.databinding.FragmentOrderBinding
 import com.capston2024.capstonapp.extension.OrderHistoryState
 import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.extension.PaymentIdState
 import com.capston2024.capstonapp.presentation.main.MainViewModel
 import com.capston2024.capstonapp.presentation.startend.CompletePaymentActivity
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -57,8 +53,7 @@ class OrderFragment:Fragment() {
         orderViewModel = ViewModelProvider(requireActivity()).get(OrderViewModel::class.java)
         binding.rvOrder.adapter=orderAdapter
 
-        //mainViewModel.setPaymentId("order")
-            //paymentid를 서버에 보내서 주문내역 받아옴
+        //paymentid를 서버에 보내서 주문내역 받아옴
         lifecycleScope.launch {
             mainViewModel.orderState.collect{orderState ->
                 when(orderState){
@@ -80,13 +75,13 @@ class OrderFragment:Fragment() {
     }
     private fun getOrderList(){
         lifecycleScope.launch {
+
             //paymentid를 서버에 보내서 주문내역 받아옴
             mainViewModel.paymentIdState.collect{paymentIdState ->
                 when(paymentIdState){
                     is PaymentIdState.Success ->{
                         Log.d("orderfragment","paymentid state success")
                         orderViewModel.getOrderHistory(paymentIdState.paymentId)
-                        //mainViewModel.setPaymentState()
                     }
                     is PaymentIdState.Loading -> {}
                     is PaymentIdState.Error -> {}
@@ -103,7 +98,6 @@ class OrderFragment:Fragment() {
                     is OrderHistoryState.Success -> {
                         Log.d("orderfragment", "orderhistorystate is success")
                         orderAdapter.getOrderHistoryList(orderHistoryState.orderHistoryList)
-                        //mainViewModel.setPaymentStateLoading()
                     }
                     is OrderHistoryState.Error -> {
                         Log.e("orderfragment","foodstate is error")
@@ -133,20 +127,6 @@ class OrderFragment:Fragment() {
             mainViewModel.isVisibleOrderList(false)
         }
     }
-
-    private fun goToNextScreen() {
-        val currentActivity = activity
-        if (currentActivity != null && !currentActivity.isFinishing && !currentActivity.isDestroyed) {
-            val intent = Intent(currentActivity, CompletePaymentActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            startActivity(intent)
-            currentActivity.finish()
-        } else {
-            Log.e("OrderFragment", "Activity is null or not attached")
-        }
-    }
-
 
 
     override fun onDestroyView() {

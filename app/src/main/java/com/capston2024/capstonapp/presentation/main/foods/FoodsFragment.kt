@@ -1,7 +1,6 @@
 package com.capston2024.capstonapp.presentation.main.foods
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
@@ -61,18 +59,13 @@ class FoodsFragment(private var id:Int) : Fragment() {
             foodsViewModel.foodState.collect { foodState ->
                 when (foodState) {
                     is FoodState.Success -> {
-                        //Toast.makeText(activity, "정보 가져오기 성공", Toast.LENGTH_SHORT).show()
-                        //pictureViewModel.getData(foodState.foodList)
                         getFoodListWithPicture()
                     }
 
                     is FoodState.Error -> {
-                        //Toast.makeText(activity, "정보 가져오기 실패", Toast.LENGTH_SHORT).show()
-                        Log.e("error","foodstate is error: ${foodState.message}")
                     }
 
                     is FoodState.Loading -> {
-                        //Toast.makeText(activity, "로딩중", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -87,7 +80,6 @@ class FoodsFragment(private var id:Int) : Fragment() {
                         foodsAdapter.submitList(it.foodList)
                     }
                     is FoodState.Error -> {
-                        Log.e("error","picturestate is error")
                     }
                     is FoodState.Loading-> {
 
@@ -101,9 +93,6 @@ class FoodsFragment(private var id:Int) : Fragment() {
         // 아이템 클릭 리스너 설정
         foodsAdapter.setOnItemClickListener(object : FoodsViewHolder.OnItemClickListener {
             override fun onFoodItemClick(foodItem: ResponseFoodDto.Food) {
-                // 아이템을 BagFragment로 전달
-                //Toast.makeText(activity, "${foodItem.lastName}", Toast.LENGTH_SHORT).show()
-                Log.d("courseclick", "coursefragment course clicked item: ${foodItem.name}")
                 val activity = requireActivity() as MainActivity
                 val bagFragment=activity.bagFragment
                 val bag = Bag(foodItem.id, foodItem.name, foodItem.price, 1) // Bag 객체 생성
@@ -112,13 +101,8 @@ class FoodsFragment(private var id:Int) : Fragment() {
                 }
                 bagFragment.arguments=bundle
 
-                /*if (!activity.bagIsShow)
-                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentType.AI_MODE)
-                else {
-                    bagFragment.setBag()
-                }*/
                 if(!mainViewModel.isBagShow.value!!){
-                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentMode.AI_MODE)
+                    activity.showBagFragment(bagFragment, FragmentMode.AI_MODE)
                 }else{
                     bagFragment.setBag()
                 }
@@ -140,11 +124,7 @@ class FoodsFragment(private var id:Int) : Fragment() {
         val layoutManager = binding.rvFoods.layoutManager as? GridLayoutManager
         layoutManager?.spanCount = newSpanCount
         binding.rvFoods.layoutManager = layoutManager
-    }
-
-    fun updateData(newId: Int) {
-        this.id = newId
-        // 새로운 데이터로 뷰를 업데이트하는 로직 추가
+        binding.rvFoods.adapter?.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

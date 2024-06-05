@@ -2,7 +2,6 @@ package com.capston2024.capstonapp.presentation.main.menu
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ class MenuFragment : Fragment() {
     private val binding: FragmentMenuBinding
         get() = requireNotNull(_binding) { "바인딩 객체 생성 안됨" }
 
-    private val menuViewModel:MenuViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var menuAdapter: MenuAdapter
     private var changeFragmentLIstener:ChangeFragmentListener?=null
@@ -50,7 +48,6 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setting()
-        //changeMenu()
         changeMode()
     }
 
@@ -64,13 +61,6 @@ class MenuFragment : Fragment() {
         makeButton(modeValue)
     }
 
-   /* private fun changeMenu(){
-        mainViewModel.menuID.observe(viewLifecycleOwner){menuID ->
-            Log.d("menufragment","menufragment changemenu:${menuID}")
-            menuAdapter.setSelectedMenuID(menuID)
-        }
-        //menuAdapter.setMenuList()
-    }*/
     private fun changeMode(){
         mainViewModel.mode.observe(viewLifecycleOwner){mode ->
             menuAdapter.updateMode(mode)
@@ -82,14 +72,11 @@ class MenuFragment : Fragment() {
             mainViewModel.menuState.collect { menuState ->
                 when (menuState) {
                     is MenuState.Success -> {
-                        Log.d("menufragment","menufragment success")
                         menuAdapter.updateMenuList(menuState.menuList, mode)
                     }
                     is MenuState.Error -> {
-                        Log.d("menufragment","menufragment is error")
                     }
                     is MenuState.Loading -> {
-                        Log.d("menufragment","menufragment is loading")
                     }
                 }
             }
