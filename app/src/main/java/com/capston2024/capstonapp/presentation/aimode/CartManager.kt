@@ -312,6 +312,33 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
         }
         return ""
     }
+    //---------------------------------------------------------------------------------
+    fun PIAname(): String {
+        return "payInAiFunction"
+    }
+
+    fun PIAdescription(): String {
+        return "음식 주문을 완료하고 최종 결제하는 함수 입니다." +
+                "예를들어 '결제할게' 같은 의미의 말을 들으면 이 함수가 호출됩니다."
+
+    }
+
+    fun PIAparams(): Parameters {
+        val params = Parameters.buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+            }
+            putJsonArray("required") {
+
+            }
+        }
+        return params
+    }
+
+    fun payInAiFunction(): String {
+
+        return ""
+    }
     /***
      * functioncall용 전처리
      * gpt 함수호출을 위한 파트 끝부분입니다.
