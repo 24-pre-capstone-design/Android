@@ -1,7 +1,6 @@
 package com.capston2024.capstonapp.presentation.main.menu
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -11,7 +10,6 @@ import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.data.responseDto.ResponseMenuDto
 import com.capston2024.capstonapp.databinding.ItemMenuBinding
 import com.capston2024.capstonapp.presentation.main.ChangeFragmentListener
-import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 
 
 class MenuAdapter(
@@ -31,7 +29,6 @@ class MenuAdapter(
             // mode 값에 따라 버튼의 배경을 변경
             if (mode == FragmentMode.BASIC_MODE) {
                 if (selectedPosition == position) {
-                    Log.d("menuadapter", "selectedmenu:${menuData.name}")
                     binding.btnMenu.setBackgroundResource(R.drawable.ic_rectangle_beige)
                 } else {
                     binding.btnMenu.background =
@@ -52,7 +49,6 @@ class MenuAdapter(
             selectedPosition = position
             notifyItemChanged(selectedPosition) // 현재 선택된 아이템 업데이트
             menuList[position].let { menu ->
-                Log.d("menuadapter", "replacemenu:${menu.name}")
                 listener.replaceFragment(FragmentMode.BASIC_MODE, menu.id)
                 listener.changeMenuID(menu.id)
                 listener.replaceMenuName(menu.name)

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -17,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <EditText
+  <!--  <EditText
         android:id="@+id/et_user_input"
         android:layout_width="1200dp"
         android:layout_height="100dp"
@@ -28,7 +27,7 @@
         android:layout_marginStart="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_ai"/>
+        app:layout_constraintTop_toBottomOf="@id/rv_ai"/>-->
 
    <!-- <TextView
         android:id="@+id/tv_state"

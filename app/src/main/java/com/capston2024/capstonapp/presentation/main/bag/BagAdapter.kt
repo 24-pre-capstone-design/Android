@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.ItemBagBinding
-import com.capston2024.capstonapp.presentation.main.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -23,7 +22,6 @@ class BagAdapter(
 
     inner class BagViewHolder(private val binding: ItemBagBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            //private val fragment=itemView.context as? BagFragment
         init {
             with(binding) {
                 btnPlus.setOnClickListener {
@@ -102,35 +100,12 @@ class BagAdapter(
             notifyDataSetChanged()
         }
 
-        private fun setCount(){
-            val activity=itemView.context as AppCompatActivity
-            val fragment=activity.supportFragmentManager.findFragmentById(R.id.fcv_bag) as BagFragment
+        private fun setCount() {
+            val activity = itemView.context as AppCompatActivity
+            val fragment =
+                activity.supportFragmentManager.findFragmentById(R.id.fcv_bag) as BagFragment
             fragment.setCount()
         }
-        /*fun deleteItem() {
-            // bagList가 비어있으면 해당 Fragment를 제거한다.
-            val fragmentManager = (context as AppCompatActivity).supportFragmentManager
-            val bagFragment = fragmentManager.findFragmentById(R.id.fcv_bag)
-            // bagFragment를 제거한다.
-            bagFragment?.let {
-                val activity = bagFragment.requireActivity() as MainActivity
-                activity.bagIsShow = false
-
-                val transaction = fragmentManager.beginTransaction()
-                transaction.remove(it)
-
-                transaction.commit()
-
-                // 트랜잭션이 완료될 때까지 기다림
-                fragmentManager.executePendingTransactions()
-
-                // 제거된 후에는 bagFragment는 null이 되어야 함
-                val isFragmentRemoved = fragmentManager.findFragmentById(R.id.fcv_bag) == null
-
-                Log.d("Fragment", "Fragment removed: $isFragmentRemoved")
-            }
-            //Log.d("Fragment", "Fragment removed: ${bagFragment == null}")
-        }*/
     }
 
 
@@ -178,10 +153,6 @@ class BagAdapter(
 
     fun getBagList():List<Bag> = bagList
 
-    // bagList를 초기화하는 함수를 정의합니다.
-    fun initializeBagList() {
-        bagList = mutableListOf()
-    }
     fun getTotalCount(): Int{
         var total=0
         for(i in bagList)

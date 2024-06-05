@@ -2,14 +2,11 @@ package com.capston2024.capstonapp.presentation.order
 
 import android.animation.ObjectAnimator
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +56,6 @@ class PayCheckDialog : DialogFragment() {
         }
 
         binding.btnOrder.setOnClickListener {
-            //paymentListener?.CompletePayment()
             showPopup()
             dismiss()
         }

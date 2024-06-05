@@ -4,7 +4,6 @@ import com.capston2024.capstonapp.data.requestDto.RequestOrderDto
 import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 import com.capston2024.capstonapp.data.responseDto.ResponsePictureDto
 import com.capston2024.capstonapp.data.responseDto.ResponseMenuDto
-import com.capston2024.capstonapp.data.responseDto.ResponseMockDto
 import com.capston2024.capstonapp.data.responseDto.ResponseOrderDto
 import com.capston2024.capstonapp.data.responseDto.ResponseOrderHistoryDto
 import com.capston2024.capstonapp.data.responseDto.ResponsePaymentIdDto
@@ -15,10 +14,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthService {
-    @GET("api/users")
-    suspend fun getMock(
-        @Query("page") page:Int
-    ): ResponseMockDto
 
     @GET("/foodCategory")
     suspend fun getMenus():ResponseMenuDto

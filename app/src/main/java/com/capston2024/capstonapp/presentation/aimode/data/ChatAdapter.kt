@@ -1,6 +1,5 @@
 package com.capston2024.capstonapp.presentation.aimode.data
 
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -1,6 +1,5 @@
 package com.capston2024.capstonapp.presentation.aimode
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,7 +35,6 @@ class AIViewModel @Inject constructor(
                     }
                     true -> {
                         _allFoodState.value = FoodState.Success(response.makeFoodList())
-                        Log.d("foodsviewmodel","success,${response.message}")
                     }
                 }
             }.onFailure { throwable ->

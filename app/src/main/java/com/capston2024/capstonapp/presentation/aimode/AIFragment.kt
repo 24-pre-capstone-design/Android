@@ -78,10 +78,6 @@ class AIFragment : Fragment() {
         requestPermission()
         //tts 객체 초기화
         resetTTS()
-
-
-        //addChatItem(requireContext().getString(R.string.ai_explain), MessageType.AI_CHAT)
-        //clickButton()
     }
 
     private fun setting() {
@@ -124,13 +120,14 @@ class AIFragment : Fragment() {
 
             mainViewModel.mode.observe(viewLifecycleOwner){mode ->
                 when(mode) {
-                    FragmentMode.AI_MODE -> startRepeatingTask() // AIMode일 때 TTS 시작
-                    FragmentMode.BASIC_MODE -> stopRepeatingTask() // BasicMode일 때 TTS 중단
+                    FragmentMode.AI_MODE -> startSingleTask() // AIMode일 때 TTS 시작
+                    FragmentMode.BASIC_MODE -> stopSingleTask() // BasicMode일 때 TTS 중단
                 }
             }
     }
 
-   /* private fun clickButton() {
+    private fun clickButton() {
+        stopSingleTask()
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
             setRecognitionListener(recognitionListener)
             // RecognizerIntent 생성
@@ -144,9 +141,9 @@ class AIFragment : Fragment() {
             // 여기에 startListening 호출 추가
             startListening(intent)
         }
-    }*/
+    }
 
-    private fun clickButton() {
+   /* private fun clickButton() {
         handleUserMessage(binding.etUserInput.text.toString())
         messageList.add(
             CustomChatMessage(
@@ -156,7 +153,7 @@ class AIFragment : Fragment() {
         )
         chatAdapter.notifyDataSetChanged()
         binding.etUserInput.setText("") //초기화
-    }
+    }*/
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -203,7 +200,7 @@ class AIFragment : Fragment() {
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(5.0f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(1.7f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {
@@ -214,18 +211,15 @@ class AIFragment : Fragment() {
         }
     }
 
-    private fun startRepeatingTask() {
+    private fun startSingleTask() {
         handler = Handler(Looper.getMainLooper())
-        runnable = object : Runnable {
-            override fun run() {
-                speakInitialMessage()
-                handler?.postDelayed(this, 20000) // 20초 후에 다시 실행
-            }
+        runnable = Runnable {
+            speakInitialMessage()
         }
         runnable?.let { handler?.post(it) }
     }
 
-    private fun stopRepeatingTask() {
+    private fun stopSingleTask() {
         handler?.removeCallbacks(runnable!!)
     }
 

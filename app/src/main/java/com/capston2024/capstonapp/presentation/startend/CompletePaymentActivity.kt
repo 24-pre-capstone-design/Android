@@ -14,18 +14,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.capston2024.capstonapp.BuildConfig
+import com.capston2024.capstonapp.MyApp
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.databinding.ActivityCompletePaymentBinding
 import com.capston2024.capstonapp.extension.FoodState
 import com.capston2024.capstonapp.presentation.aimode.AIViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CompletePaymentActivity : AppCompatActivity() {
     private lateinit var binding:ActivityCompletePaymentBinding
     private val handler = Handler(Looper.getMainLooper())
     private var imageUpdateRunnable: Runnable? = null
     private val aiViewModel: AIViewModel by viewModels()
-    private val startViewModel:StartViewModel by viewModels()
+    private lateinit var startViewModel: StartViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complete_payment)
@@ -35,6 +38,10 @@ class CompletePaymentActivity : AppCompatActivity() {
     private fun setting(){
         binding=ActivityCompletePaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // MyApplication을 통해 StartViewModel 가져오기
+        val application = application as MyApp
+        startViewModel = application.startViewModel
+
         // 상태 바와 네비게이션 바 숨기기
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -114,10 +121,10 @@ class CompletePaymentActivity : AppCompatActivity() {
 
     private fun switchImage(currentImageView: ImageView, nextImage: String) {
         // Coil 라이브러리를 사용하여 이미지 로드
-        currentImageView.load(nextImage) {
-            crossfade(true) // 이미지 로딩 시 크로스페이드 효과 적용
-            crossfade(500) // 크로스페이드 지속 시간 설정 (옵션)
-        }
+        currentImageView.load(nextImage) /*{
+            crossfade(true)
+            crossfade(500)
+        }*/
     }
 
 

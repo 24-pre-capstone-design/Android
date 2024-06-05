@@ -1,7 +1,6 @@
 package com.capston2024.capstonapp.presentation.main.bag
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
 import com.capston2024.capstonapp.databinding.FragmentBagBinding
-import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
@@ -48,16 +46,14 @@ class BagFragment : Fragment(), BagListUpdateListener {
 
     fun setBag() {
         var foodItem = arguments?.getSerializable("selectedFood") as Bag
-        Log.d("bagfragment", "bagfragment:fooditem-${foodItem.count}")
         bagAdapter.addBagList(foodItem)
         binding.rvBag.scrollToPosition(bagAdapter.getBagList().size - 1)
 
         setCount()
 
-        mainViewModel.bagList.observe(viewLifecycleOwner, Observer { bagList ->
-            Log.d("bagfragment","setbag baglistsize: ${bagList.size}")
+        mainViewModel.bagList.observe(viewLifecycleOwner) { bagList ->
             bagAdapter.updateList(bagList)
-        })
+        }
     }
 
     fun setCount() {
@@ -71,7 +67,7 @@ class BagFragment : Fragment(), BagListUpdateListener {
 
     private fun clickButtons() {
         binding.btnOrder.setOnClickListener {
-            val dialog = OrderCheckDialog(bagAdapter, mainViewModel)
+            val dialog = OrderCheckDialog(mainViewModel)
             dialog.isCancelable = false
             activity?.let { dialog.show(it.supportFragmentManager, "ConfirmDialog") }
         }
