@@ -105,6 +105,11 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     description = cartManager.OFdescription()
                     parameters = cartManager.OFparams()
                 }
+                function {
+                    name = cartManager.PIAname()
+                    description = cartManager.PIAdescription()
+                    parameters = cartManager.PIAparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -159,6 +164,10 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                 cartManager.OFname()->{
                     Log.i("LLM-WK", "Argument nothing")
                     functionResponse = cartManager.orderFunction()
+                }
+                cartManager.PIAname()->{
+                    Log.i("LLM-WK", "Argument nothing")
+                    functionResponse = cartManager.payInAiFunction()
                 }
 
 
