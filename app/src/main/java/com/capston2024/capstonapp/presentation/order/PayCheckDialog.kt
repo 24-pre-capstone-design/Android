@@ -72,7 +72,7 @@ class PayCheckDialog : DialogFragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             payingDL.dismiss()
-            paymentListener?.CompletePayment()
+            paymentListener?.completePayment()
         }, 5000)
     }
 

@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
     }
 
 
-    override fun CompletePayment() {
+    override fun completePayment() {
         var intent = Intent(this, CompletePaymentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)

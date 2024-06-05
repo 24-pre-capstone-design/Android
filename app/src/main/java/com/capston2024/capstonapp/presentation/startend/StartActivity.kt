@@ -178,7 +178,7 @@ class StartActivity : AppCompatActivity() {
                     startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(1.7f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(3.0f) // TTS 속도 설정
                     startRepeatingTask() // 초기 메시지 음성 출력 시작
                 }
             } else {
@@ -194,7 +194,7 @@ class StartActivity : AppCompatActivity() {
         runnable = object : Runnable {
             override fun run() {
                 speakInitialMessage()
-                handler.postDelayed(this, 10000) // 5초 후에 다시 실행
+                handler.postDelayed(this, 15000) // 15초 후에 다시 실행
             }
         }
         handler.post(runnable)
@@ -223,6 +223,6 @@ class StartActivity : AppCompatActivity() {
         super.onDestroy()
         stopRepeatingTask()
         textToSpeech?.stop()
-        textToSpeech?.shutdown()
+        //textToSpeech?.shutdown()
     }
 }

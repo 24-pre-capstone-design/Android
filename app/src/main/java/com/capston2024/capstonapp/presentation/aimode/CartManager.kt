@@ -1,7 +1,14 @@
 package com.capston2024.capstonapp.presentation.aimode
 
+import android.animation.ObjectAnimator
+import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.ProgressBar
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.aallam.openai.api.core.Parameters
@@ -11,6 +18,8 @@ import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.extension.OrderState
 import com.capston2024.capstonapp.presentation.main.MainActivity
 import com.capston2024.capstonapp.presentation.main.MainViewModel
+import com.capston2024.capstonapp.presentation.order.PaymentListener
+import com.capston2024.capstonapp.presentation.startend.CompletePaymentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,7 +35,8 @@ import kotlin.math.log
 class CartManager(private val aiViewModel: AIViewModel, private val mainActivity: MainActivity, private val mainViewModel: MainViewModel) {
 
     // companion object:Fragment() {
-
+    //결제하기 눌렀을 때 로딩 다이얼로그 뜨고 바로 끝화면으로 넘어가게 함
+    private var paymentListener: PaymentListener? = null
 
     fun name(): String {
         return "FoodOrderFunction"
@@ -336,8 +346,32 @@ class CartManager(private val aiViewModel: AIViewModel, private val mainActivity
     }
 
     fun payInAiFunction(): String {
-
+        paymentListener = mainActivity
+        mainActivity.runOnUiThread {
+            showPopup()
+        }
         return ""
+    }
+
+    private fun showPopup() {
+        val payingDL = Dialog(mainActivity)
+        payingDL.setContentView(R.layout.popup_paying)
+        payingDL.setCancelable(false)
+        payingDL.show()
+
+        val payingPB: ProgressBar = payingDL.findViewById(R.id.payingProgressBar)
+        animateProgressBar(payingPB)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            payingDL.dismiss()
+            paymentListener?.completePayment()
+        }, 5000)
+    }
+
+    private fun animateProgressBar(progressBar: ProgressBar) {
+        val animator = ObjectAnimator.ofInt(progressBar, "progress", 0, 100)
+        animator.duration = 4700
+        animator.start()
     }
     /***
      * functioncall용 전처리

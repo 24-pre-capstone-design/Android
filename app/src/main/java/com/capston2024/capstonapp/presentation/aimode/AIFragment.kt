@@ -85,9 +85,14 @@ class AIFragment : Fragment() {
         //binding.rvAi.adapter = AIAdapter(messages)
         messageList = mutableListOf()
         chatAdapter = ChatAdapter(messageList)
-        mainViewModel= ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         aiViewModel = ViewModelProvider(requireActivity()).get(AIViewModel::class.java)
-        openAIWrapper = OpenAIWrapper(requireContext(), aiViewModel, requireActivity() as MainActivity, mainViewModel)
+        openAIWrapper = OpenAIWrapper(
+            requireContext(),
+            aiViewModel,
+            requireActivity() as MainActivity,
+            mainViewModel
+        )
 
         with(binding) {
             rvAi.layoutManager = LinearLayoutManager(requireContext())
@@ -118,12 +123,18 @@ class AIFragment : Fragment() {
             }
         }
 
-            mainViewModel.mode.observe(viewLifecycleOwner){mode ->
-                when(mode) {
-                    FragmentMode.AI_MODE -> startSingleTask() // AIMode일 때 TTS 시작
-                    FragmentMode.BASIC_MODE -> stopSingleTask() // BasicMode일 때 TTS 중단
-                }
+        mainViewModel.mode.observe(viewLifecycleOwner) { mode ->
+            when (mode) {
+                FragmentMode.AI_MODE -> {
+                    Log.d("aiffragment","mode: aimode")
+                    startSingleTask()
+                } // AIMode일 때 TTS 시작
+                FragmentMode.BASIC_MODE -> {
+                    Log.d("aiffragment","mode: basicmode")
+                    stopSingleTask()
+                } // BasicMode일 때 TTS 중단
             }
+        }
     }
 
     private fun clickButton() {
@@ -143,17 +154,17 @@ class AIFragment : Fragment() {
         }
     }
 
-   /* private fun clickButton() {
-        handleUserMessage(binding.etUserInput.text.toString())
-        messageList.add(
-            CustomChatMessage(
-                ChatRole.User,
-                userContent = binding.etUserInput.text.toString()
-            )
-        )
-        chatAdapter.notifyDataSetChanged()
-        binding.etUserInput.setText("") //초기화
-    }*/
+    /* private fun clickButton() {
+         handleUserMessage(binding.etUserInput.text.toString())
+         messageList.add(
+             CustomChatMessage(
+                 ChatRole.User,
+                 userContent = binding.etUserInput.text.toString()
+             )
+         )
+         chatAdapter.notifyDataSetChanged()
+         binding.etUserInput.setText("") //초기화
+     }*/
 
     private fun handleUserMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -193,7 +204,11 @@ class AIFragment : Fragment() {
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     // 언어 데이터가 없거나 지원하지 않는 언어일 때 처리
                     Log.e("aifragment", "Language is not supported")
-                    Toast.makeText(context, "TTS 언어 데이터가 필요합니다. Google TTS 앱에서 데이터를 설치해주세요.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "TTS 언어 데이터가 필요합니다. Google TTS 앱에서 데이터를 설치해주세요.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     // 사용자를 Google TTS 앱 또는 설정 페이지로 안내할 수 있는 인텐트 실행
                     val installIntent = Intent()
                     installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
@@ -206,7 +221,11 @@ class AIFragment : Fragment() {
             } else {
                 // TTS 초기화 실패 처리
                 Log.e("aifragment", "Initialization failed")
-                Toast.makeText(context, "TTS 초기화에 실패하였습니다. 앱 설정에서 TTS 엔진을 확인해주세요.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "TTS 초기화에 실패하였습니다. 앱 설정에서 TTS 엔진을 확인해주세요.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -214,13 +233,15 @@ class AIFragment : Fragment() {
     private fun startSingleTask() {
         handler = Handler(Looper.getMainLooper())
         runnable = Runnable {
+            Log.d("aifragment","startsingletask")
             speakInitialMessage()
         }
         runnable?.let { handler?.post(it) }
     }
 
     private fun stopSingleTask() {
-        handler?.removeCallbacks(runnable!!)
+        handler!!.removeCallbacks(runnable!!)
+        textToSpeech?.stop()
     }
 
     override fun onResume() {
@@ -234,7 +255,8 @@ class AIFragment : Fragment() {
     }
 
     private fun speakInitialMessage() {
-        if (isTTSReady && isFragmentVisible()) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
+        Log.d("aifragment","startinitialmessage, ttsready: $isTTSReady")
+        if (isTTSReady) { // TTS가 준비되었고, 프래그먼트가 보일 때만 실행
             // 설명 메시지를 TTS로 말하기
             textToSpeech?.speak(
                 getString(R.string.ai_mode_explain),
@@ -243,14 +265,18 @@ class AIFragment : Fragment() {
                 ""
             )
             Log.d("aifragment", "tts is ready")
+        }else{
+            Log.d("aifragment","tts is not ready")
         }
     }
+
     private fun isFragmentVisible(): Boolean {
-        return isVisible && !isHidden
+        Log.d("aifragment","isvisible:$isVisible")
+        return isVisible
     }
 
 
-    private fun speakResponse(text:String){
+    private fun speakResponse(text: String) {
         if (isTTSReady) {
             textToSpeech?.speak(
                 text,
@@ -325,7 +351,7 @@ class AIFragment : Fragment() {
                 messageList.add(
                     CustomChatMessage(
                         ChatRole.User,
-                        userContent =text
+                        userContent = text
                     )
                 )
                 chatAdapter.notifyDataSetChanged()
