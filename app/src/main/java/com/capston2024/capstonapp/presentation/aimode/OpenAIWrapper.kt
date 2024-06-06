@@ -33,7 +33,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
     private var conversation: MutableList<CustomChatMessage>
     private var openAI: OpenAI = OpenAI(openAIToken)
     private val dbHelper = HistoryDbHelper(context)
-    val foodmenuf =  FoodMenuFunctions()
     val cartManager = CartManager(aiViewModel, mainActivity,mainViewModel)
 
     init {
@@ -43,6 +42,7 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                 userContent = """너는 친절한 20대 여성이고 '한식다이어리'라는 음식점의 점원이야.
                     |항상 부드러운 말투와 정중한 표현을 사용해
                     |'야채비빔밥',' 육회비빔밥','김치찌개'같은 한국 음식이름은 foodName으로서 함수 호출시 사용할 수 있으니 제대로 인식해야해
+                    |주문을 받은 후 소요시간 같은건 얼마나 걸릴지 모르니 언급하지 말아줘. 
                     |""".trimMargin()
             )
         )
@@ -70,18 +70,26 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
 
             // hardcoding weather function every time (for now)
             functions {
-                function{
-                    name = foodmenuf.name()
-                    description = foodmenuf.description()
-                    parameters = foodmenuf.params()
-                }
-
                 function {
                     name = cartManager.name()
                     description = cartManager.description()
                     parameters = cartManager.params()
                 }
-
+                function {
+                    name = cartManager.FMFname()
+                    description = cartManager.FMFdescription()
+                    parameters = cartManager.FMFparams()
+                }
+                function {
+                    name = cartManager.FDFname()
+                    description = cartManager.FDFdescription()
+                    parameters = cartManager.FDFparams()
+                }
+                function {
+                    name = cartManager.OFname()
+                    description = cartManager.OFdescription()
+                    parameters = cartManager.OFparams()
+                }
 
             }
             functionCall = FunctionMode.Auto
@@ -109,13 +117,6 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
             var functionResponse = ""
             var handled = true
             when (function.name) {
-                foodmenuf.name()->{
-                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
-                    val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
-
-                    Log.i("LLM-WK", "Argument $foodName")
-                    functionResponse = foodmenuf.getFoodDetails(foodName)
-                }
                 cartManager.name()->{
                     val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
                     val item = decodeIfNeeded(functionArgs.getValue("item").jsonPrimitive.content)
@@ -123,6 +124,28 @@ class OpenAIWrapper(val context: Context?,val aiViewModel: AIViewModel, val main
                     Log.i("LLM-WK", "Argument $item $quantity")
                     functionResponse = cartManager.foodOrderFunction(item, quantity)
                 }
+                cartManager.FMFname()->{
+                    Log.i("LLM-WK", "Argument nothing")
+                    functionResponse = cartManager.foodMenuFunction()
+                }
+                cartManager.FDFname()->{
+                    val functionArgs = function.argumentsAsJson() ?: error("arguments field is missing")
+                    val foodName = decodeIfNeeded(functionArgs.getValue("foodName").jsonPrimitive.content)
+                    val quantity:String = if(functionArgs.containsKey("quantity")){
+                        decodeIfNeeded(functionArgs.getValue("quantity").jsonPrimitive.content)
+                    }else{
+                        "1"
+                    }
+
+                    Log.i("LLM-WK", "Argument $foodName $quantity")
+                    functionResponse = cartManager.foodDeleteFunction(foodName, quantity)
+                }
+
+                cartManager.OFname()->{
+                    Log.i("LLM-WK", "Argument nothing")
+                    functionResponse = cartManager.orderFunction()
+                }
+
 
                 else -> {
                     Log.i("LLM", "Function ${function!!.name} does not exist")

@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.Bag
-import com.capston2024.capstonapp.data.FragmentType
+import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.data.responseDto.ResponseFoodDto
 import com.capston2024.capstonapp.databinding.FragmentFoodsBinding
 import com.capston2024.capstonapp.extension.FoodState
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.io.Serializable
 
 @AndroidEntryPoint
-class FoodsFragment(private val id:Int) : Fragment() {
+class FoodsFragment(private var id:Int) : Fragment() {
     private var _binding: FragmentFoodsBinding? = null
     private val binding: FragmentFoodsBinding
         get() = requireNotNull(_binding) { "null" }
@@ -53,6 +53,10 @@ class FoodsFragment(private val id:Int) : Fragment() {
 
     fun showPhotos() {
         foodsViewModel.getData(id)
+        mainViewModel.menuID.observe(viewLifecycleOwner){ menuId ->
+            foodsViewModel.getData(menuId)
+        }
+
         lifecycleScope.launch {
             foodsViewModel.foodState.collect { foodState ->
                 when (foodState) {
@@ -114,7 +118,7 @@ class FoodsFragment(private val id:Int) : Fragment() {
                     bagFragment.setBag()
                 }*/
                 if(!mainViewModel.isBagShow.value!!){
-                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentType.AI_MODE)
+                    activity.showFragments(R.id.fcv_bag, bagFragment, FragmentMode.AI_MODE)
                 }else{
                     bagFragment.setBag()
                 }
@@ -136,6 +140,11 @@ class FoodsFragment(private val id:Int) : Fragment() {
         val layoutManager = binding.rvFoods.layoutManager as? GridLayoutManager
         layoutManager?.spanCount = newSpanCount
         binding.rvFoods.layoutManager = layoutManager
+    }
+
+    fun updateData(newId: Int) {
+        this.id = newId
+        // 새로운 데이터로 뷰를 업데이트하는 로직 추가
     }
 
     override fun onDestroyView() {
