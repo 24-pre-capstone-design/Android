@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,25 +14,24 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
-import coil.load
-import com.capston2024.capstonapp.BuildConfig
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.databinding.ActivityStartBinding
 import com.capston2024.capstonapp.presentation.main.MainActivity
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
-import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
-import java.net.URL
 import java.util.Locale
+import java.net.URL
 import kotlin.concurrent.thread
+import com.capston2024.capstonapp.BuildConfig
 import kotlin.random.Random
+import org.json.JSONObject
+import java.io.IOException
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import kotlin.concurrent.thread
 
 class StartActivity : Activity() {
 
@@ -46,14 +46,12 @@ class StartActivity : Activity() {
         setContentView(R.layout.activity_start)
 
         val imageView: ImageView = findViewById(R.id.randomImg)
-
         updateImageRunnable = Runnable {
             fetchAndUpdateImage(imageView)
             imageHandler.postDelayed(updateImageRunnable, updateInterval)
         }
 
         var newActivity = findViewById<LinearLayout>(R.id.startScreen)
-        imageHandler.post(updateImageRunnable)
 
         newActivity.setOnClickListener() {
             var intent = Intent(applicationContext, MainActivity::class.java)
@@ -73,7 +71,6 @@ class StartActivity : Activity() {
                 //tts 객체 초기화
                 resetTTS()
             }
-
 
         }
 
@@ -143,11 +140,13 @@ class StartActivity : Activity() {
     override fun onResume() {
         super.onResume()
         startRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보일 때 TTS 시작
+        imageHandler.post(updateImageRunnable)
     }
 
     override fun onPause() {
         super.onPause()
         stopRepeatingTask() // 액티비티/프래그먼트가 사용자에게 보이지 않을 때 TTS 중단
+        imageHandler.removeCallbacks(updateImageRunnable)
     }
 
     private fun speakInitialMessage() {
@@ -165,8 +164,9 @@ class StartActivity : Activity() {
 
 
  override fun onDestroy() {
-        super.onDestroy()
-        imageHandler.removeCallbacks(updateImageRunnable)
+     super.onDestroy()
+     imageHandler.removeCallbacks(updateImageRunnable)
+
  }
 
     companion object {

@@ -279,12 +279,10 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
 
         val animatorSet = AnimatorSet()
 
-        // 아래로 내려오는 애니메이션
         val translateYAnimatorUp = ObjectAnimator.ofFloat(view, "translationY", -5f, 5f)
         translateYAnimatorUp.duration = 300
         translateYAnimatorUp.interpolator = AccelerateDecelerateInterpolator()
 
-        // 위로  애니메이션
         val translateYAnimatorDown = ObjectAnimator.ofFloat(view, "translationY", 5f, -5f)
         translateYAnimatorDown.duration = 300
         translateYAnimatorDown.interpolator = DecelerateInterpolator()
@@ -292,7 +290,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         animatorSet.playSequentially(translateYAnimatorUp, translateYAnimatorDown)
         animatorSet.startDelay = delay
         animatorSet.start()
-//        animatorSet.duration = 400
+
         animatorSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animatorSet)
@@ -302,54 +300,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
             }
         })
 
-
-
-
-        /*
-        //val animator = ObjectAnimator.ofFloat(view, "translationY", 0f, 10f, -10f, 0f)
-        val animator = ObjectAnimator.ofFloat(view, "translationY", 10f, -10f, 10f)
-        animator.duration = 2000
-        animator.repeatCount = ObjectAnimator.INFINITE
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        animator.startDelay = delay
-        animator.start()*/
     }
-/*
-    private fun animateCircle() {
-        // 각 원 모양의 View를 가져옵니다.
-        val circle1 = findViewById<View>(R.id.circle1)
-        val circle2 = findViewById<View>(R.id.circle2)
-        val circle3 = findViewById<View>(R.id.circle3)
-
-        // 원 모양의 애니메이션을 생성합니다.
-        val animatorSet = AnimatorSet().apply {
-            // 각 원에 대한 애니메이션을 설정합니다.
-            playTogether(
-                createAnimator(circle1),
-                createAnimator(circle2),
-                createAnimator(circle3)
-            )
-            // 애니메이션을 반복합니다.
-            //repeatCount = ObjectAnimator.INFINITE
-            // 애니메이션을 시작합니다.
-            start()
-        }
-    }
-
-    private fun createAnimator(view: View): ObjectAnimator {
-        // 원 모양의 애니메이션을 생성합니다.
-        val animator = ObjectAnimator.ofFloat(
-            view, // 애니메이션을 적용할 View
-            "translationY", // Y축 방향으로 이동
-            0f, // 시작 위치
-            -100f, // 종료 위치
-            100f // 시작 위치로 다시 되돌아감
-        ).apply {
-            duration = 1000 // 애니메이션 지속 시간
-            interpolator = AccelerateDecelerateInterpolator() // 가속/감속 보간자
-        }
-        return animator
-    }*/
 
 override fun CompletePayment() {
     var intent = Intent(this, CompletePaymentActivity::class.java)
