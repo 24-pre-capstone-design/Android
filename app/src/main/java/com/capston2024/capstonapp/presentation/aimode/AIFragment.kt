@@ -216,7 +216,7 @@ class AIFragment : Fragment() {
                     context?.startActivity(installIntent)
                 } else {
                     isTTSReady = true // TTS가 준비되었음을 표시
-                    textToSpeech?.setSpeechRate(1.7f) // TTS 속도 설정
+                    textToSpeech?.setSpeechRate(3.0f) // TTS 속도 설정
                     speakInitialMessage() // 초기 메시지 음성 출력
                 }
             } else {
