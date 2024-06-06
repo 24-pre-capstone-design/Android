@@ -2,8 +2,14 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CapstonApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/main_benner_beige</item>
     </style>
 
     <style name="Theme.CapstonApp" parent="Base.Theme.CapstonApp" />
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@drawable/ic_rectangle_white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
 </resources>
