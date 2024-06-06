@@ -1,5 +1,8 @@
 package com.capston2024.capstonapp.presentation.main
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Dialog
 import android.content.Intent
@@ -8,6 +11,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -66,7 +72,7 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
                     }
                     transaction.show(aiFragment)
                     foodsFragment?.let { transaction.remove(it) }
-                    foodsFragment=null
+                    foodsFragment = null
                     mainViewModel.changeMode(FragmentMode.AI_MODE)
                 } else {
                     foodsFragment =
@@ -249,6 +255,13 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         val payingPB: ProgressBar = payingDL.findViewById(R.id.payingProgressBar)
         animateProgressBar(payingPB)
 
+        val circle1: View = payingDL.findViewById(R.id.circle1)
+        val circle2: View = payingDL.findViewById(R.id.circle2)
+        val circle3: View = payingDL.findViewById(R.id.circle3)
+        animateCircle(circle1)
+        animateCircle(circle2, delay = 200)
+        animateCircle(circle3, delay = 400)
+
         Handler(Looper.getMainLooper()).postDelayed({
             payingDL.dismiss()
             CompletePayment()
@@ -262,48 +275,124 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
         animator.start()
     }
 
-    override fun CompletePayment() {
-        var intent = Intent(this, CompletePaymentActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        finish()
+    private fun animateCircle(view: View, delay: Long = 0) {
+
+        val animatorSet = AnimatorSet()
+
+        // 아래로 내려오는 애니메이션
+        val translateYAnimatorUp = ObjectAnimator.ofFloat(view, "translationY", -5f, 5f)
+        translateYAnimatorUp.duration = 300
+        translateYAnimatorUp.interpolator = AccelerateDecelerateInterpolator()
+
+        // 위로  애니메이션
+        val translateYAnimatorDown = ObjectAnimator.ofFloat(view, "translationY", 5f, -5f)
+        translateYAnimatorDown.duration = 300
+        translateYAnimatorDown.interpolator = DecelerateInterpolator()
+
+        animatorSet.playSequentially(translateYAnimatorUp, translateYAnimatorDown)
+        animatorSet.startDelay = delay
+        animatorSet.start()
+//        animatorSet.duration = 400
+        animatorSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                super.onAnimationEnd(animatorSet)
+                animatorSet.startDelay = 0
+                animatorSet.start()
+
+            }
+        })
+
+
+
+
+        /*
+        //val animator = ObjectAnimator.ofFloat(view, "translationY", 0f, 10f, -10f, 0f)
+        val animator = ObjectAnimator.ofFloat(view, "translationY", 10f, -10f, 10f)
+        animator.duration = 2000
+        animator.repeatCount = ObjectAnimator.INFINITE
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.startDelay = delay
+        animator.start()*/
     }
+/*
+    private fun animateCircle() {
+        // 각 원 모양의 View를 가져옵니다.
+        val circle1 = findViewById<View>(R.id.circle1)
+        val circle2 = findViewById<View>(R.id.circle2)
+        val circle3 = findViewById<View>(R.id.circle3)
 
-    override fun replaceFragment(type: FragmentMode, id: Int) {
-        // foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
-
-
-        //foodsFragment = FoodsFragment(id)
-        val transaction = supportFragmentManager.beginTransaction()
-       //
-        if (foodsFragment == null) {
-            foodsFragment= FoodsFragment(id)
-            transaction.add(R.id.fcv_main, foodsFragment!!, "foodsFragment")
-            transaction.hide(aiFragment)
-            transaction.commit()
+        // 원 모양의 애니메이션을 생성합니다.
+        val animatorSet = AnimatorSet().apply {
+            // 각 원에 대한 애니메이션을 설정합니다.
+            playTogether(
+                createAnimator(circle1),
+                createAnimator(circle2),
+                createAnimator(circle3)
+            )
+            // 애니메이션을 반복합니다.
+            //repeatCount = ObjectAnimator.INFINITE
+            // 애니메이션을 시작합니다.
+            start()
         }
-        mainViewModel.changeMenuID(id)
-        //transaction.commit()
-        /*    supportFragmentManager.beginTransaction()
-                .replace(R.id.fcv_main, foodsFragment!!, "foodsFragment")
-                .commit()
-        } else {
-            // 기존 프래그먼트의 데이터를 업데이트하는 로직 추가 (필요시)
-            foodsFragment!!.updateData(id)
-            supportFragmentManager.beginTransaction()
-                .show(foodsFragment!!)
-                .commit()
-        }*/
-
-        //mode 입력
-        mainViewModel.changeMode(type)
     }
 
-    override fun replaceMenuName(menuName: String) {
-        binding.tvMenuName.text = menuName
-    }
+    private fun createAnimator(view: View): ObjectAnimator {
+        // 원 모양의 애니메이션을 생성합니다.
+        val animator = ObjectAnimator.ofFloat(
+            view, // 애니메이션을 적용할 View
+            "translationY", // Y축 방향으로 이동
+            0f, // 시작 위치
+            -100f, // 종료 위치
+            100f // 시작 위치로 다시 되돌아감
+        ).apply {
+            duration = 1000 // 애니메이션 지속 시간
+            interpolator = AccelerateDecelerateInterpolator() // 가속/감속 보간자
+        }
+        return animator
+    }*/
 
-    override fun changeMenuID(menuID: Int) {
-        mainViewModel.changeMenuID(menuID)
+override fun CompletePayment() {
+    var intent = Intent(this, CompletePaymentActivity::class.java)
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(intent)
+    finish()
+}
+
+override fun replaceFragment(type: FragmentMode, id: Int) {
+    // foodsFragment = supportFragmentManager.findFragmentByTag("foodsFragment") as? FoodsFragment
+
+
+    //foodsFragment = FoodsFragment(id)
+    val transaction = supportFragmentManager.beginTransaction()
+    //
+    if (foodsFragment == null) {
+        foodsFragment = FoodsFragment(id)
+        transaction.add(R.id.fcv_main, foodsFragment!!, "foodsFragment")
+        transaction.hide(aiFragment)
+        transaction.commit()
     }
+    mainViewModel.changeMenuID(id)
+    //transaction.commit()
+    /*    supportFragmentManager.beginTransaction()
+            .replace(R.id.fcv_main, foodsFragment!!, "foodsFragment")
+            .commit()
+    } else {
+        // 기존 프래그먼트의 데이터를 업데이트하는 로직 추가 (필요시)
+        foodsFragment!!.updateData(id)
+        supportFragmentManager.beginTransaction()
+            .show(foodsFragment!!)
+            .commit()
+    }*/
+
+    //mode 입력
+    mainViewModel.changeMode(type)
+}
+
+override fun replaceMenuName(menuName: String) {
+    binding.tvMenuName.text = menuName
+}
+
+override fun changeMenuID(menuID: Int) {
+    mainViewModel.changeMenuID(menuID)
+}
 }
