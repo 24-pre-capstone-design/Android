@@ -67,7 +67,7 @@ class CompletePaymentActivity : AppCompatActivity() {
 
     private fun setTime(){
         val timerTextView = binding.tvTimer
-        var secondsRemaining=5
+        var secondsRemaining=10
 
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
