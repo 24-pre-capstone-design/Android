@@ -1,24 +1,28 @@
 package com.capston2024.capstonapp.presentation.main
 
+import android.animation.ObjectAnimator
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.capston2024.capstonapp.R
 import com.capston2024.capstonapp.data.FragmentMode
 import com.capston2024.capstonapp.databinding.ActivityMainBinding
-import com.capston2024.capstonapp.presentation.startend.PayingActivity
 import com.capston2024.capstonapp.presentation.aimode.AIFragment
 import com.capston2024.capstonapp.presentation.aimode.AIViewModel
-import com.capston2024.capstonapp.presentation.aimode.OpenAIWrapper
 import com.capston2024.capstonapp.presentation.main.bag.BagFragment
 import com.capston2024.capstonapp.presentation.main.foods.FoodsFragment
 import com.capston2024.capstonapp.presentation.main.menu.MenuFragment
 import com.capston2024.capstonapp.presentation.order.OrderFragment
 import com.capston2024.capstonapp.presentation.order.PaymentListener
+import com.capston2024.capstonapp.presentation.startend.CompletePaymentActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -236,9 +240,30 @@ class MainActivity : AppCompatActivity(), PaymentListener, ChangeFragmentListene
             .commit()
     }
 
+    override fun PayingProgress() {
+        val payingDL = Dialog(this)
+        payingDL.setContentView(R.layout.popup_paying)
+        payingDL.setCancelable(false)
+        payingDL.show()
+
+        val payingPB: ProgressBar = payingDL.findViewById(R.id.payingProgressBar)
+        animateProgressBar(payingPB)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            payingDL.dismiss()
+            CompletePayment()
+        }, 5000)
+
+    }
+
+    private fun animateProgressBar(progressBar: ProgressBar) {
+        val animator = ObjectAnimator.ofInt(progressBar, "progress", 0, 100)
+        animator.duration = 4700
+        animator.start()
+    }
 
     override fun CompletePayment() {
-        var intent = Intent(this, PayingActivity::class.java)
+        var intent = Intent(this, CompletePaymentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish()

@@ -51,7 +51,7 @@ class PayCheckDialog : DialogFragment() {
         }
 
         binding.btnOrder.setOnClickListener {
-           paymentListener?.CompletePayment()
+            paymentListener?.PayingProgress()
             dismiss()
         }
     }
