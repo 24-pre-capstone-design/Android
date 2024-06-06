@@ -10,8 +10,8 @@
 * Remove: 파일을 삭제하는 작업만 했을 경
 
 ## Branch Name
-"Label/요약 내용"형식으로 작성    -
-ex) Feat/start-screen-
+"Label/요약 내용"형식으로 작성
+ex) Feat/start-screen
 
 ## Code
 * 클래스명: 명사 또는 명사구로 작성
